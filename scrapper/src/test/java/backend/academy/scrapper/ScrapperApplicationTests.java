@@ -9,5 +9,6 @@ import org.springframework.context.annotation.Import;
 class ScrapperApplicationTests {
 
     @Test
-    void contextLoads() {}
+    void contextLoads() {
+    }
 }
