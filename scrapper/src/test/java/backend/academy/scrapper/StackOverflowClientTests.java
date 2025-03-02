@@ -1,5 +1,9 @@
 package backend.academy.scrapper;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+
 import backend.academy.scrapper.client.StackOverflowClient;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,9 +15,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 
 public class StackOverflowClientTests {
 
@@ -46,17 +47,16 @@ public class StackOverflowClientTests {
 
     @Test
     public void testGetQuestionInfo_HttpError() {
-        WebClientResponseException exception = WebClientResponseException.create(
-            404, "Not Found", null, null, StandardCharsets.UTF_8
-        );
+        WebClientResponseException exception =
+                WebClientResponseException.create(404, "Not Found", null, null, StandardCharsets.UTF_8);
         doReturn(Mono.error(exception)).when(responseSpec).bodyToMono(String.class);
 
         Mono<String> result = stackOverflowClient.getQuestionInfo("123456");
 
         StepVerifier.create(result)
-            .expectErrorMatches(err -> err instanceof WebClientResponseException &&
-                ((WebClientResponseException) err).getStatusCode().value() == 404)
-            .verify();
+                .expectErrorMatches(err -> err instanceof WebClientResponseException
+                        && ((WebClientResponseException) err).getStatusCode().value() == 404)
+                .verify();
     }
 
     @Test
@@ -67,9 +67,7 @@ public class StackOverflowClientTests {
 
         Mono<Instant> result = stackOverflowClient.getQuestionLastActivity("123456");
 
-        StepVerifier.create(result)
-            .expectNext(Instant.EPOCH)
-            .verifyComplete();
+        StepVerifier.create(result).expectNext(Instant.EPOCH).verifyComplete();
     }
 
     @Test
@@ -81,7 +79,7 @@ public class StackOverflowClientTests {
         Mono<Instant> result = stackOverflowClient.getQuestionLastActivity("123456");
 
         StepVerifier.create(result)
-            .expectNext(Instant.ofEpochSecond(1730390400))
-            .verifyComplete();
+                .expectNext(Instant.ofEpochSecond(1730390400))
+                .verifyComplete();
     }
 }

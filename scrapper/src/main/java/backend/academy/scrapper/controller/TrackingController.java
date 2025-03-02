@@ -23,22 +23,33 @@ public class TrackingController {
 
     @PostMapping("/track")
     public Mono<Void> addTracking(@RequestBody TrackingData trackingData) {
-        log.info("Получены данные для отслеживания: действие={}, ссылка={}, id пользователя={}, теги={}, фильтры={}",
-            "добавление", trackingData.getLink(), trackingData.getUserId(),
-            trackingData.getTags(), trackingData.getFilters());
+        log.info(
+                "Получены данные для отслеживания: действие={}, ссылка={}, id пользователя={}, теги={}, фильтры={}",
+                "добавление",
+                trackingData.getLink(),
+                trackingData.getUserId(),
+                trackingData.getTags(),
+                trackingData.getFilters());
         trackingRepository.addTracking(trackingData);
-        log.info("Данные успешно сохранены в репозитории: ссылка={}, id пользователя={}",
-            trackingData.getLink(), trackingData.getUserId());
+        log.info(
+                "Данные успешно сохранены в репозитории: ссылка={}, id пользователя={}",
+                trackingData.getLink(),
+                trackingData.getUserId());
         return Mono.empty();
     }
 
     @PostMapping("/untrack")
     public Mono<Void> removeTracking(@RequestBody TrackingData trackingData) {
-        log.info("Получен запрос на прекращение отслеживания: действие={}, ссылка={}, id пользователя={}",
-            "удаление", trackingData.getLink(), trackingData.getUserId());
+        log.info(
+                "Получен запрос на прекращение отслеживания: действие={}, ссылка={}, id пользователя={}",
+                "удаление",
+                trackingData.getLink(),
+                trackingData.getUserId());
         trackingRepository.removeTracking(trackingData);
-        log.info("Запись успешно удалена из репозитория: ссылка={}, id пользователя={}",
-            trackingData.getLink(), trackingData.getUserId());
+        log.info(
+                "Запись успешно удалена из репозитория: ссылка={}, id пользователя={}",
+                trackingData.getLink(),
+                trackingData.getUserId());
         return Mono.empty();
     }
 }

@@ -35,8 +35,7 @@ public class ListCommandHandler implements CommandHandler {
         } else {
             StringBuilder stringBuilder = new StringBuilder();
             for (int i = 0; i < links.size(); i++) {
-                stringBuilder.append(i).append(". ").
-                    append(links.get(i).link()).append("\n");
+                stringBuilder.append(i).append(". ").append(links.get(i).link()).append("\n");
             }
 
             sendMessage(userId, stringBuilder.toString());

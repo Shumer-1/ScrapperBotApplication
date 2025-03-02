@@ -24,7 +24,8 @@ public class HelpCommandHandler implements CommandHandler {
             telegramBot.execute(new SendMessage(update.message().chat().id(), "Сначала нужно зарегистрироваться."));
             return;
         }
-        String responseText = """
+        String responseText =
+                """
             /start - регистрация пользователя.\n
             /help - вывод списка доступных команд.\n
             /track <ссылка> - начать отслеживание ссылки.\n
@@ -35,4 +36,3 @@ public class HelpCommandHandler implements CommandHandler {
         telegramBot.execute(sendMessage);
     }
 }
-

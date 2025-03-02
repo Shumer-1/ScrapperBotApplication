@@ -1,5 +1,10 @@
 package backend.academy.bot;
 
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import backend.academy.bot.commandHandlers.CommandDispatcher;
 import backend.academy.bot.commandHandlers.ListCommandHandler;
 import backend.academy.bot.model.Link;
@@ -14,10 +19,6 @@ import com.pengrad.telegrambot.request.SendMessage;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class ListCommandHandlerTest {
 

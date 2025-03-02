@@ -1,25 +1,26 @@
 package backend.academy.bot;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.*;
+
+import backend.academy.bot.client.ScrapperClient;
 import backend.academy.bot.commandHandlers.CommandDispatcher;
 import backend.academy.bot.commandHandlers.TrackCommandHandler;
 import backend.academy.bot.service.LinkService;
 import backend.academy.bot.states.TrackCommandState;
 import backend.academy.bot.states.TrackStateManager;
-import backend.academy.bot.client.ScrapperClient;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Chat;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.request.SendMessage;
+import java.lang.reflect.Field;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.*;
-import java.lang.reflect.Field;
 import reactor.core.publisher.Mono;
-import java.util.List;
 
 public class TrackCommandHandlerTests {
 
@@ -36,7 +37,8 @@ public class TrackCommandHandlerTests {
         telegramBot = mock(TelegramBot.class);
         scrapperClient = mock(ScrapperClient.class);
         handler = new TrackCommandHandler(linkService, stateManager, telegramBot, scrapperClient);
-        when(scrapperClient.addTracking(anyString(), anyLong(), anyList(), anyList())).thenReturn(Mono.empty());
+        when(scrapperClient.addTracking(anyString(), anyLong(), anyList(), anyList()))
+                .thenReturn(Mono.empty());
         Field field = CommandDispatcher.class.getDeclaredField("isStarted");
         field.setAccessible(true);
         field.set(null, true);
@@ -87,14 +89,15 @@ public class TrackCommandHandlerTests {
         assertThat(state).isNotNull();
         assertThat(state.getTags()).containsExactly("java", "spring");
 
-        verify(telegramBot, atLeastOnce()).execute(argThat((com.pengrad.telegrambot.request.BaseRequest<?, ?> request) -> {
-            if (request instanceof SendMessage) {
-                SendMessage sm = (SendMessage) request;
-                Object text = sm.getParameters().get("text");
-                return text != null && text.toString().contains("Настройте фильтры");
-            }
-            return false;
-        }));
+        verify(telegramBot, atLeastOnce())
+                .execute(argThat((com.pengrad.telegrambot.request.BaseRequest<?, ?> request) -> {
+                    if (request instanceof SendMessage) {
+                        SendMessage sm = (SendMessage) request;
+                        Object text = sm.getParameters().get("text");
+                        return text != null && text.toString().contains("Настройте фильтры");
+                    }
+                    return false;
+                }));
 
         Update updateFilters = mock(Update.class);
         Message messageFilters = mock(Message.class);
@@ -111,19 +114,28 @@ public class TrackCommandHandlerTests {
 
         assertThat(stateManager.getState(67890L)).isNull();
 
-        verify(linkService).addLink(eq("https://github.com/user/repo"), eq(67890L),
-            eq(List.of("java", "spring")), eq(List.of("filter1", "filter2")));
+        verify(linkService)
+                .addLink(
+                        eq("https://github.com/user/repo"),
+                        eq(67890L),
+                        eq(List.of("java", "spring")),
+                        eq(List.of("filter1", "filter2")));
 
-        verify(scrapperClient).addTracking(eq("https://github.com/user/repo"), eq(67890L),
-            eq(List.of("java", "spring")), eq(List.of("filter1", "filter2")));
+        verify(scrapperClient)
+                .addTracking(
+                        eq("https://github.com/user/repo"),
+                        eq(67890L),
+                        eq(List.of("java", "spring")),
+                        eq(List.of("filter1", "filter2")));
 
-        verify(telegramBot, atLeastOnce()).execute(argThat((com.pengrad.telegrambot.request.BaseRequest<?, ?> request) -> {
-            if (request instanceof SendMessage) {
-                SendMessage sm = (SendMessage) request;
-                Object text = sm.getParameters().get("text");
-                return text != null && text.toString().contains("Ссылка сохранена");
-            }
-            return false;
-        }));
+        verify(telegramBot, atLeastOnce())
+                .execute(argThat((com.pengrad.telegrambot.request.BaseRequest<?, ?> request) -> {
+                    if (request instanceof SendMessage) {
+                        SendMessage sm = (SendMessage) request;
+                        Object text = sm.getParameters().get("text");
+                        return text != null && text.toString().contains("Ссылка сохранена");
+                    }
+                    return false;
+                }));
     }
 }

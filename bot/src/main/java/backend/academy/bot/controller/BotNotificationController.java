@@ -23,17 +23,27 @@ public class BotNotificationController {
 
     @PostMapping("/notify")
     public void receiveNotification(@RequestBody NotificationRequest request) {
-        log.info("Получено уведомление от скраппера: действие={}, сообщение={}, id пользователя={}",
-            "получено", request.getMessage(), request.getUserId());
+        log.info(
+                "Получено уведомление от скраппера: действие={}, сообщение={}, id пользователя={}",
+                "получено",
+                request.getMessage(),
+                request.getUserId());
         String messageText = request.getMessage();
         SendMessage sendMessage = new SendMessage(request.getUserId(), messageText);
         try {
             telegramBot.execute(sendMessage);
-            log.info("Уведомление успешно отправлено: действие={}, сообщение={}, id пользователя={}",
-                "отправлено", request.getMessage(), request.getUserId());
+            log.info(
+                    "Уведомление успешно отправлено: действие={}, сообщение={}, id пользователя={}",
+                    "отправлено",
+                    request.getMessage(),
+                    request.getUserId());
         } catch (Exception e) {
-            log.error("Ошибка при отправке уведомления: действие={}, сообщение={}, id пользователя={}, ошибка={}",
-                "отправка", request.getMessage(), request.getUserId(), e.getMessage());
+            log.error(
+                    "Ошибка при отправке уведомления: действие={}, сообщение={}, id пользователя={}, ошибка={}",
+                    "отправка",
+                    request.getMessage(),
+                    request.getUserId(),
+                    e.getMessage());
         }
     }
 }

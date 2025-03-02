@@ -1,5 +1,10 @@
 package backend.academy.scrapper;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import backend.academy.scrapper.client.GitHubClient;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,10 +16,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class GitHubClientTest {
 
@@ -42,16 +43,16 @@ public class GitHubClientTest {
         doReturn(headersSpec).when(headersSpec).header(anyString(), anyString());
         doReturn(responseSpec).when(headersSpec).retrieve();
 
-        WebClientResponseException exception = WebClientResponseException.create(
-            400, "Bad Request", null, null, StandardCharsets.UTF_8);
+        WebClientResponseException exception =
+                WebClientResponseException.create(400, "Bad Request", null, null, StandardCharsets.UTF_8);
         when(responseSpec.bodyToMono(String.class)).thenReturn(Mono.error(exception));
 
         Mono<String> result = gitHubClient.getRepositoryInfo("https://github.com/user/repo");
 
         StepVerifier.create(result)
-            .expectErrorMatches(err -> err instanceof WebClientResponseException &&
-                ((WebClientResponseException) err).getStatusCode().value() == 400)
-            .verify();
+                .expectErrorMatches(err -> err instanceof WebClientResponseException
+                        && ((WebClientResponseException) err).getStatusCode().value() == 400)
+                .verify();
     }
 
     @Test
@@ -72,7 +73,7 @@ public class GitHubClientTest {
         Mono<Instant> result = gitHubClient.getLastUpdateTime("https://github.com/user/repo");
 
         StepVerifier.create(result)
-            .expectErrorMatches(err -> err instanceof NullPointerException)
-            .verify();
+                .expectErrorMatches(err -> err instanceof NullPointerException)
+                .verify();
     }
 }

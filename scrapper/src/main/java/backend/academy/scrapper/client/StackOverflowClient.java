@@ -21,28 +21,23 @@ public class StackOverflowClient {
     }
 
     public Mono<String> getQuestionInfo(String questionId) {
-        String url = String.format("https://api.stackexchange.com/2.3/questions/%s?order=desc&sort=activity&site=stackoverflow&key=%s",
-            questionId, key);
-        return webClient.get()
-            .uri(url)
-            .retrieve()
-            .bodyToMono(String.class);
+        String url = String.format(
+                "https://api.stackexchange.com/2.3/questions/%s?order=desc&sort=activity&site=stackoverflow&key=%s",
+                questionId, key);
+        return webClient.get().uri(url).retrieve().bodyToMono(String.class);
     }
 
     public Mono<Instant> getQuestionLastActivity(String questionId) {
-        String url = String.format("https://api.stackexchange.com/2.3/questions/%s?order=desc&sort=activity&site=stackoverflow&key=%s",
-            questionId, key);
-        return webClient.get()
-            .uri(url)
-            .retrieve()
-            .bodyToMono(JsonNode.class)
-            .map(json -> {
-                JsonNode items = json.get("items");
-                if (items != null && items.isArray() && !items.isEmpty()) {
-                    long timestamp = items.get(0).get("last_activity_date").asLong();
-                    return Instant.ofEpochSecond(timestamp);
-                }
-                return Instant.EPOCH;
-            });
+        String url = String.format(
+                "https://api.stackexchange.com/2.3/questions/%s?order=desc&sort=activity&site=stackoverflow&key=%s",
+                questionId, key);
+        return webClient.get().uri(url).retrieve().bodyToMono(JsonNode.class).map(json -> {
+            JsonNode items = json.get("items");
+            if (items != null && items.isArray() && !items.isEmpty()) {
+                long timestamp = items.get(0).get("last_activity_date").asLong();
+                return Instant.ofEpochSecond(timestamp);
+            }
+            return Instant.EPOCH;
+        });
     }
 }

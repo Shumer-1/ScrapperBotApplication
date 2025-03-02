@@ -21,8 +21,11 @@ public class TrackCommandHandler implements CommandHandler {
     private final String trackCommand = "/track";
     private final String sepRegex = "\\s+";
 
-    public TrackCommandHandler(LinkService linkService, TrackStateManager stateManager,
-                               TelegramBot telegramBot, ScrapperClient scrapperClient) {
+    public TrackCommandHandler(
+            LinkService linkService,
+            TrackStateManager stateManager,
+            TelegramBot telegramBot,
+            ScrapperClient scrapperClient) {
         this.linkService = linkService;
         this.stateManager = stateManager;
         this.telegramBot = telegramBot;
@@ -32,8 +35,7 @@ public class TrackCommandHandler implements CommandHandler {
     @Override
     public boolean supports(Update update) {
         long userId = Long.parseLong(update.message().from().id().toString());
-        return update.message().text().toLowerCase().startsWith(trackCommand)
-            || stateManager.getState(userId) != null;
+        return update.message().text().toLowerCase().startsWith(trackCommand) || stateManager.getState(userId) != null;
     }
 
     @Override
@@ -67,18 +69,15 @@ public class TrackCommandHandler implements CommandHandler {
                 state.setFilters(filters);
                 state.nextStep();
                 linkService.addLink(state.getLink(), userId, state.getTags(), state.getFilters());
-                sendMessage(update, "Ссылка сохранена с тегами: " + state.getTags() + " и фильтрами: " + state.getFilters());
-                scrapperClient.addTracking(
-                        state.getLink(),
-                        userId,
-                        state.getTags(),
-                        state.getFilters()
-                    )
-                    .subscribe(
-                        unused -> {
-                        },
-                        error -> telegramBot.execute(new SendMessage(update.message().chat().id(), "Ошибка передачи данных в скраппер"))
-                    );
+                sendMessage(
+                        update,
+                        "Ссылка сохранена с тегами: " + state.getTags() + " и фильтрами: " + state.getFilters());
+                scrapperClient
+                        .addTracking(state.getLink(), userId, state.getTags(), state.getFilters())
+                        .subscribe(
+                                unused -> {},
+                                error -> telegramBot.execute(new SendMessage(
+                                        update.message().chat().id(), "Ошибка передачи данных в скраппер")));
                 stateManager.clearState(userId);
             }
         }

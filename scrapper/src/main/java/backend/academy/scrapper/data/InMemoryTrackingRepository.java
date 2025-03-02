@@ -18,8 +18,8 @@ public class InMemoryTrackingRepository implements TrackingRepository {
     @Override
     public void addTracking(TrackingData trackingData) {
         trackingMap
-            .computeIfAbsent(trackingData.getUserId(), id -> new CopyOnWriteArrayList<>())
-            .add(trackingData);
+                .computeIfAbsent(trackingData.getUserId(), id -> new CopyOnWriteArrayList<>())
+                .add(trackingData);
     }
 
     @Override
@@ -32,10 +32,7 @@ public class InMemoryTrackingRepository implements TrackingRepository {
 
     @Override
     public Collection<TrackingData> getAllTracking() {
-        return trackingMap.values()
-            .stream()
-            .flatMap(List::stream)
-            .collect(Collectors.toList());
+        return trackingMap.values().stream().flatMap(List::stream).collect(Collectors.toList());
     }
 
     @Override

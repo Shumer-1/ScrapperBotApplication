@@ -19,23 +19,25 @@ public class GitHubClient {
     }
 
     public Mono<String> getRepositoryInfo(String repoApiUrl) {
-        return webClient.get()
-            .uri(convertToApiUrl(repoApiUrl))
-            .header("Authorization", "token " + githubToken)
-            .retrieve()
-            .bodyToMono(String.class);
+        return webClient
+                .get()
+                .uri(convertToApiUrl(repoApiUrl))
+                .header("Authorization", "token " + githubToken)
+                .retrieve()
+                .bodyToMono(String.class);
     }
 
     public Mono<Instant> getLastUpdateTime(String repoApiUrl) {
-        return webClient.get()
-            .uri(convertToApiUrl(repoApiUrl))
-            .header("Authorization", "token " + githubToken)
-            .retrieve()
-            .bodyToMono(JsonNode.class)
-            .map(json -> {
-                String pushedAt = json.get("pushed_at").asText();
-                return Instant.parse(pushedAt);
-            });
+        return webClient
+                .get()
+                .uri(convertToApiUrl(repoApiUrl))
+                .header("Authorization", "token " + githubToken)
+                .retrieve()
+                .bodyToMono(JsonNode.class)
+                .map(json -> {
+                    String pushedAt = json.get("pushed_at").asText();
+                    return Instant.parse(pushedAt);
+                });
     }
 
     private String convertToApiUrl(String url) {
@@ -44,5 +46,4 @@ public class GitHubClient {
         }
         return url;
     }
-
 }

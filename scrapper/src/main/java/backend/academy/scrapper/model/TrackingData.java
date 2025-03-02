@@ -9,8 +9,7 @@ public class TrackingData {
     private String[] filters;
     private Instant lastUpdated;
 
-    public TrackingData() {
-    }
+    public TrackingData() {}
 
     public TrackingData(String link, long userId, String[] tags, String[] filters, Instant lastUpdated) {
         this.link = link;
@@ -59,5 +58,4 @@ public class TrackingData {
     public void setLastUpdated(Instant lastUpdated) {
         this.lastUpdated = lastUpdated;
     }
-
 }

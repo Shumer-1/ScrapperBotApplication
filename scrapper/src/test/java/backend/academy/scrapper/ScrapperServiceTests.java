@@ -1,5 +1,16 @@
 package backend.academy.scrapper;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import backend.academy.scrapper.client.GitHubClient;
 import backend.academy.scrapper.client.StackOverflowClient;
 import backend.academy.scrapper.data.InMemoryTrackingRepository;
@@ -12,16 +23,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class ScrapperServiceTests {
 
@@ -57,8 +58,8 @@ public class ScrapperServiceTests {
     public void testGitHubUpdateNotificationSent() {
         String link = "https://github.com/user/repo";
         long userId = 101;
-        TrackingData trackingData = new TrackingData(link, userId,
-            new String[]{"tag1"}, new String[]{"filter1"}, null);
+        TrackingData trackingData =
+                new TrackingData(link, userId, new String[] {"tag1"}, new String[] {"filter1"}, null);
         trackingRepository.addTracking(trackingData);
 
         Instant newUpdate = Instant.parse("2025-03-01T12:00:00Z");
@@ -78,8 +79,8 @@ public class ScrapperServiceTests {
         String link = "https://github.com/user/repo";
         long userId = 101;
         Instant previousUpdate = Instant.parse("2025-03-01T12:00:00Z");
-        TrackingData trackingData = new TrackingData(link, userId,
-            new String[]{"tag1"}, new String[]{"filter1"}, null);
+        TrackingData trackingData =
+                new TrackingData(link, userId, new String[] {"tag1"}, new String[] {"filter1"}, null);
         trackingData.setLastUpdated(previousUpdate);
         trackingRepository.addTracking(trackingData);
 
@@ -99,8 +100,7 @@ public class ScrapperServiceTests {
     public void testStackOverflowUpdateNotificationSent() {
         String link = "https://stackoverflow.com/questions/12345678/sample-question";
         long userId = 202;
-        TrackingData trackingData = new TrackingData(link, userId,
-            new String[]{"tag"}, new String[]{"filter"}, null);
+        TrackingData trackingData = new TrackingData(link, userId, new String[] {"tag"}, new String[] {"filter"}, null);
         trackingRepository.addTracking(trackingData);
 
         Instant newActivity = Instant.parse("2025-03-01T15:00:00Z");
@@ -120,8 +120,7 @@ public class ScrapperServiceTests {
         String link = "https://stackoverflow.com/questions/12345678/sample-question";
         long userId = 202;
         Instant previousActivity = Instant.parse("2025-03-01T15:00:00Z");
-        TrackingData trackingData = new TrackingData(link, userId,
-            new String[]{"tag"}, new String[]{"filter"}, null);
+        TrackingData trackingData = new TrackingData(link, userId, new String[] {"tag"}, new String[] {"filter"}, null);
         trackingData.setLastUpdated(previousActivity);
         trackingRepository.addTracking(trackingData);
 

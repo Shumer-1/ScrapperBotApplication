@@ -20,4 +20,3 @@ public class TrackStateManager {
         stateMap.remove(userId);
     }
 }
-

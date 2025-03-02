@@ -23,10 +23,11 @@ public class ScrapperService {
     private final WebClient webClient;
     private final TrackingRepository trackingRepository;
 
-    public ScrapperService(GitHubClient gitHubClient,
-                           StackOverflowClient stackOverflowClient,
-                           WebClient webClient,
-                           TrackingRepository trackingRepository) {
+    public ScrapperService(
+            GitHubClient gitHubClient,
+            StackOverflowClient stackOverflowClient,
+            WebClient webClient,
+            TrackingRepository trackingRepository) {
         this.gitHubClient = gitHubClient;
         this.stackOverflowClient = stackOverflowClient;
         this.webClient = webClient;
@@ -44,56 +45,89 @@ public class ScrapperService {
             long userId = trackingData.getUserId();
 
             if (link.contains("github.com")) {
-                gitHubClient.getLastUpdateTime(link)
-                    .doOnNext(newLastUpdate -> {
-                        Instant previousUpdate = trackingData.getLastUpdated();
-                        if (previousUpdate == null || newLastUpdate.isAfter(previousUpdate)) {
-                            log.info("Обнаружены изменения в репозитории: действие={}, ссылка={}, старое время={}, новое время={}",
-                                "обновление", link, previousUpdate, newLastUpdate);
-                            sendNotification("Обновления в репозитории: " + link, userId);
-                            trackingRepository.updateLastUpdated(link, userId, newLastUpdate);
-                        } else {
-                            log.debug("Изменений не обнаружено для репозитория: ссылка={}, старое время={}, новое время={}",
-                                link, previousUpdate, newLastUpdate);
-                        }
-                    })
-                    .doOnError(error -> log.error("Ошибка при запросе к GitHub API: действие={}, ссылка={}, ошибка={}",
-                        "запрос", link, error.getMessage(), error))
-                    .subscribe();
+                gitHubClient
+                        .getLastUpdateTime(link)
+                        .doOnNext(newLastUpdate -> {
+                            Instant previousUpdate = trackingData.getLastUpdated();
+                            if (previousUpdate == null || newLastUpdate.isAfter(previousUpdate)) {
+                                log.info(
+                                        "Обнаружены изменения в репозитории: действие={}, ссылка={}, старое время={}, новое время={}",
+                                        "обновление",
+                                        link,
+                                        previousUpdate,
+                                        newLastUpdate);
+                                sendNotification("Обновления в репозитории: " + link, userId);
+                                trackingRepository.updateLastUpdated(link, userId, newLastUpdate);
+                            } else {
+                                log.debug(
+                                        "Изменений не обнаружено для репозитория: ссылка={}, старое время={}, новое время={}",
+                                        link,
+                                        previousUpdate,
+                                        newLastUpdate);
+                            }
+                        })
+                        .doOnError(error -> log.error(
+                                "Ошибка при запросе к GitHub API: действие={}, ссылка={}, ошибка={}",
+                                "запрос",
+                                link,
+                                error.getMessage(),
+                                error))
+                        .subscribe();
             } else if (link.contains("stackoverflow.com")) {
                 String questionId = extractQuestionId(link);
-                stackOverflowClient.getQuestionLastActivity(questionId)
-                    .doOnNext(newLastActivity -> {
-                        Instant previousUpdate = trackingData.getLastUpdated();
-                        if (previousUpdate == null || newLastActivity.isAfter(previousUpdate)) {
-                            log.info("Обнаружены изменения по вопросу: действие={}, ссылка={}, старое время={}, новое время={}",
-                                "обновление", link, previousUpdate, newLastActivity);
-                            sendNotification("Обновления по вопросу: " + link, userId);
-                            trackingRepository.updateLastUpdated(link, userId, newLastActivity);
-                        } else {
-                            log.debug("Изменений не обнаружено для вопроса: ссылка={}, старое время={}, новое время={}",
-                                link, previousUpdate, newLastActivity);
-                        }
-                    })
-                    .doOnError(error -> log.error("Ошибка при запросе к StackOverflow API: действие={}, ссылка={}, ошибка={}",
-                        "запрос", link, error.getMessage(), error))
-                    .subscribe();
+                stackOverflowClient
+                        .getQuestionLastActivity(questionId)
+                        .doOnNext(newLastActivity -> {
+                            Instant previousUpdate = trackingData.getLastUpdated();
+                            if (previousUpdate == null || newLastActivity.isAfter(previousUpdate)) {
+                                log.info(
+                                        "Обнаружены изменения по вопросу: действие={}, ссылка={}, старое время={}, новое время={}",
+                                        "обновление",
+                                        link,
+                                        previousUpdate,
+                                        newLastActivity);
+                                sendNotification("Обновления по вопросу: " + link, userId);
+                                trackingRepository.updateLastUpdated(link, userId, newLastActivity);
+                            } else {
+                                log.debug(
+                                        "Изменений не обнаружено для вопроса: ссылка={}, старое время={}, новое время={}",
+                                        link,
+                                        previousUpdate,
+                                        newLastActivity);
+                            }
+                        })
+                        .doOnError(error -> log.error(
+                                "Ошибка при запросе к StackOverflow API: действие={}, ссылка={}, ошибка={}",
+                                "запрос",
+                                link,
+                                error.getMessage(),
+                                error))
+                        .subscribe();
             }
         }
     }
 
     private void sendNotification(String message, long userId) {
         String botNotificationUrl = "http://localhost:8080/api/bot/notify";
-        webClient.post()
-            .uri(botNotificationUrl)
-            .bodyValue(new NotificationRequest(message, userId))
-            .retrieve()
-            .bodyToMono(Void.class)
-            .doOnSuccess(aVoid -> log.info("Уведомление отправлено: действие={}, сообщение={}, id пользователя={}",
-                "отправка", message, userId))
-            .doOnError(error -> log.error("Ошибка при отправке уведомления в бот: действие={}, сообщение={}, id пользователя={}, ошибка={}",
-                "отправка", message, userId, error.getMessage(), error))
-            .subscribe();
+        webClient
+                .post()
+                .uri(botNotificationUrl)
+                .bodyValue(new NotificationRequest(message, userId))
+                .retrieve()
+                .bodyToMono(Void.class)
+                .doOnSuccess(aVoid -> log.info(
+                        "Уведомление отправлено: действие={}, сообщение={}, id пользователя={}",
+                        "отправка",
+                        message,
+                        userId))
+                .doOnError(error -> log.error(
+                        "Ошибка при отправке уведомления в бот: действие={}, сообщение={}, id пользователя={}, ошибка={}",
+                        "отправка",
+                        message,
+                        userId,
+                        error.getMessage(),
+                        error))
+                .subscribe();
     }
 
     private String extractQuestionId(String url) {

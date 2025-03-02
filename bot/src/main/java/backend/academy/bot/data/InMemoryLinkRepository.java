@@ -49,8 +49,7 @@ public class InMemoryLinkRepository implements LinkRepository {
     @Override
     public boolean deleteLinkByUserIdAndLink(long userId, String link) {
         for (int i = 0; i < storage.size(); i++) {
-            if (storage.get(i).userId() == userId
-                && storage.get(i).link().equals(link)) {
+            if (storage.get(i).userId() == userId && storage.get(i).link().equals(link)) {
                 storage.remove(i);
                 return true;
             }
@@ -68,5 +67,4 @@ public class InMemoryLinkRepository implements LinkRepository {
         storage.add(link);
         return true;
     }
-
 }

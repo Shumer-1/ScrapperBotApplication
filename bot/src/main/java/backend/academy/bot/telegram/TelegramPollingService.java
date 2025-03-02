@@ -37,12 +37,13 @@ public class TelegramPollingService {
     public void pollUpdates() {
         while (!Thread.currentThread().isInterrupted()) {
             try {
-                GetUpdates getUpdates = new GetUpdates()
-                    .limit(limit)
-                    .offset(lastUpdateId + 1)
-                    .timeout(timeout);
-                log.info("Отправляем запрос обновлений: limit={}, offset={}, timeout={}",
-                    limit, lastUpdateId + 1, timeout);
+                GetUpdates getUpdates =
+                        new GetUpdates().limit(limit).offset(lastUpdateId + 1).timeout(timeout);
+                log.info(
+                        "Отправляем запрос обновлений: limit={}, offset={}, timeout={}",
+                        limit,
+                        lastUpdateId + 1,
+                        timeout);
                 GetUpdatesResponse updatesResponse = telegramBot.execute(getUpdates);
                 List<Update> updates = updatesResponse.updates();
 
@@ -56,8 +57,7 @@ public class TelegramPollingService {
                             String text = "Такой команды нет!";
                             SendMessage sendMessage = new SendMessage(chatId, text);
                             telegramBot.execute(sendMessage);
-                            log.info("Отправлено сообщение о неизвестной команде: chatId={}, текст={}",
-                                chatId, text);
+                            log.info("Отправлено сообщение о неизвестной команде: chatId={}, текст={}", chatId, text);
                         }
                     }
                 } else {

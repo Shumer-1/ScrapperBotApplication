@@ -4,8 +4,7 @@ public class NotificationRequest {
     private String message;
     private long userId;
 
-    public NotificationRequest() {
-    }
+    public NotificationRequest() {}
 
     public NotificationRequest(String message, long userId) {
         this.message = message;

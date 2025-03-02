@@ -20,7 +20,7 @@ public class BotCommandRegistrar {
 
     @PostConstruct
     public void registerCommands() {
-        BotCommand[] commands = new BotCommand[]{
+        BotCommand[] commands = new BotCommand[] {
             new BotCommand("/start", "Регистрация пользователя"),
             new BotCommand("/help", "Список доступных команд"),
             new BotCommand("/track", "Начать отслеживание ссылки"),

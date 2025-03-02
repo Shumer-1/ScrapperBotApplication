@@ -1,5 +1,8 @@
 package backend.academy.bot;
 
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.*;
+
 import backend.academy.bot.commandHandlers.CommandDispatcher;
 import backend.academy.bot.telegram.TelegramPollingService;
 import com.pengrad.telegrambot.TelegramBot;
@@ -10,11 +13,9 @@ import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.GetUpdates;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.GetUpdatesResponse;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.*;
-import java.util.List;
 
 public class TelegramPollingServiceTests {
 
