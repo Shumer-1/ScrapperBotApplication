@@ -18,8 +18,8 @@ public class TrackCommandHandler implements CommandHandler {
     private final TrackStateManager stateManager;
     private final TelegramBot telegramBot;
     private final ScrapperClient scrapperClient;
-    private final String trackCommand = "/track";
-    private final String sepRegex = "\\s+";
+    private final static String TRACK_COMMAND = "/track";
+    private final static String SEP_REGEX = "\\s+";
 
     public TrackCommandHandler(
             LinkService linkService,
@@ -35,7 +35,7 @@ public class TrackCommandHandler implements CommandHandler {
     @Override
     public boolean supports(Update update) {
         long userId = Long.parseLong(update.message().from().id().toString());
-        return update.message().text().toLowerCase().startsWith(trackCommand) || stateManager.getState(userId) != null;
+        return update.message().text().toLowerCase().startsWith(TRACK_COMMAND) || stateManager.getState(userId) != null;
     }
 
     @Override
@@ -49,7 +49,7 @@ public class TrackCommandHandler implements CommandHandler {
 
         TrackCommandState state = stateManager.getState(userId);
 
-        if (state == null && text.startsWith(trackCommand)) {
+        if (state == null && text.startsWith(TRACK_COMMAND)) {
             String[] parts = text.split(" ");
             if (parts.length < 2) {
                 sendMessage(update, "Укажите ссылку, например: /track https://foo.bar/baz");
@@ -60,12 +60,12 @@ public class TrackCommandHandler implements CommandHandler {
             sendMessage(update, "Введите тэги (опционально)");
         } else if (state != null) {
             if (state.getStep() == TrackCommandState.Step.WAITING_FOR_TAGS) {
-                List<String> tags = Arrays.asList(text.split(sepRegex));
+                List<String> tags = Arrays.asList(text.split(SEP_REGEX));
                 state.setTags(tags);
                 state.nextStep();
                 sendMessage(update, "Настройте фильтры (опционально)");
             } else if (state.getStep() == TrackCommandState.Step.WAITING_FOR_FILTERS) {
-                List<String> filters = Arrays.asList(text.split(sepRegex));
+                List<String> filters = Arrays.asList(text.split(SEP_REGEX));
                 state.setFilters(filters);
                 state.nextStep();
                 linkService.addLink(state.getLink(), userId, state.getTags(), state.getFilters());

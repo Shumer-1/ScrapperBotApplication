@@ -19,8 +19,8 @@ public class TelegramPollingService {
     private final TelegramBot telegramBot;
     private final CommandDispatcher commandDispatcher;
     private int lastUpdateId = 0;
-    private final int limit = 100;
-    private final int timeout = 10;
+    private final static int LIMIT = 100;
+    private final static int TIMEOUT = 100;
 
     public TelegramPollingService(TelegramBot telegramBot, CommandDispatcher commandDispatcher) {
         this.telegramBot = telegramBot;
@@ -38,12 +38,12 @@ public class TelegramPollingService {
         while (!Thread.currentThread().isInterrupted()) {
             try {
                 GetUpdates getUpdates =
-                        new GetUpdates().limit(limit).offset(lastUpdateId + 1).timeout(timeout);
+                        new GetUpdates().limit(LIMIT).offset(lastUpdateId + 1).timeout(TIMEOUT);
                 log.info(
                         "Отправляем запрос обновлений: limit={}, offset={}, timeout={}",
-                        limit,
+                        LIMIT,
                         lastUpdateId + 1,
-                        timeout);
+                        TIMEOUT);
                 GetUpdatesResponse updatesResponse = telegramBot.execute(getUpdates);
                 List<Update> updates = updatesResponse.updates();
 
@@ -64,11 +64,11 @@ public class TelegramPollingService {
                     log.debug("Новых обновлений не получено.");
                 }
             } catch (Exception e) {
-                log.error("Ошибка при выполнении запроса обновлений: ошибка={}", e.getMessage(), e);
+                log.error("Ошибка при выполнении запроса обновлений: ошибка={}", e.getMessage());
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException ie) {
-                    log.error("Поток сна прерван: ошибка={}", ie.getMessage(), ie);
+                    log.error("Поток сна прерван: ошибка={}", ie.getMessage());
                     Thread.currentThread().interrupt();
                 }
             }

@@ -33,7 +33,7 @@ public class BotCommandRegistrar {
             telegramBot.execute(setMyCommands);
             log.info("Команды бота успешно зарегистрированы: команда(ы)={}", (Object) commands);
         } catch (Exception e) {
-            log.error("Ошибка при регистрации команд бота: {}", e.getMessage(), e);
+            log.error("Ошибка при регистрации команд бота: {}", e.getMessage());
         }
     }
 }

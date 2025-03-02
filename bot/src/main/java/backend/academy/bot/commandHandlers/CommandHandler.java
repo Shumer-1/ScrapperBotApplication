@@ -7,9 +7,4 @@ public interface CommandHandler {
     boolean supports(Update update);
 
     void handle(Update update);
-
-    private void sendMessage(Update update, String text) {
-        Long chatId = update.message().chat().id();
-        SendMessage sendMessage = new SendMessage(chatId, text);
-    }
 }

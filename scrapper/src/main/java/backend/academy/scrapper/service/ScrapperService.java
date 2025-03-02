@@ -5,8 +5,10 @@ import backend.academy.scrapper.client.StackOverflowClient;
 import backend.academy.scrapper.data.TrackingRepository;
 import backend.academy.scrapper.model.NotificationRequest;
 import backend.academy.scrapper.model.TrackingData;
+
 import java.time.Instant;
 import java.util.Collection;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -70,8 +72,7 @@ public class ScrapperService {
                                 "Ошибка при запросе к GitHub API: действие={}, ссылка={}, ошибка={}",
                                 "запрос",
                                 link,
-                                error.getMessage(),
-                                error))
+                                error.getMessage()))
                         .subscribe();
             } else if (link.contains("stackoverflow.com")) {
                 String questionId = extractQuestionId(link);
@@ -100,8 +101,7 @@ public class ScrapperService {
                                 "Ошибка при запросе к StackOverflow API: действие={}, ссылка={}, ошибка={}",
                                 "запрос",
                                 link,
-                                error.getMessage(),
-                                error))
+                                error.getMessage()))
                         .subscribe();
             }
         }
@@ -125,8 +125,7 @@ public class ScrapperService {
                         "отправка",
                         message,
                         userId,
-                        error.getMessage(),
-                        error))
+                        error.getMessage()))
                 .subscribe();
     }
 
