@@ -19,8 +19,8 @@ public class TelegramPollingService {
     private final TelegramBot telegramBot;
     private final CommandDispatcher commandDispatcher;
     private int lastUpdateId = 0;
-    private final static int LIMIT = 100;
-    private final static int TIMEOUT = 100;
+    private static final int LIMIT = 100;
+    private static final int TIMEOUT = 100;
 
     public TelegramPollingService(TelegramBot telegramBot, CommandDispatcher commandDispatcher) {
         this.telegramBot = telegramBot;

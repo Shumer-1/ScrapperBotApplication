@@ -18,8 +18,8 @@ public class TrackCommandHandler implements CommandHandler {
     private final TrackStateManager stateManager;
     private final TelegramBot telegramBot;
     private final ScrapperClient scrapperClient;
-    private final static String TRACK_COMMAND = "/track";
-    private final static String SEP_REGEX = "\\s+";
+    private static final String TRACK_COMMAND = "/track";
+    private static final String SEP_REGEX = "\\s+";
 
     public TrackCommandHandler(
             LinkService linkService,
