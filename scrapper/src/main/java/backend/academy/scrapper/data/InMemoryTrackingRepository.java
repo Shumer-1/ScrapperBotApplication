@@ -36,7 +36,7 @@ public class InMemoryTrackingRepository implements TrackingRepository {
     }
 
     @Override
-    public void updateLastUpdated(String link, long userId, Instant lastUpdated) {
+    public void refreshLastUpdated(String link, long userId, Instant lastUpdated) {
         List<TrackingData> list = trackingMap.get(userId);
         if (list != null) {
             for (TrackingData trackingData : list) {

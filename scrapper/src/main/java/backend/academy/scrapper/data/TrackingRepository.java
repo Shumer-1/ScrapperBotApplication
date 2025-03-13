@@ -11,5 +11,5 @@ public interface TrackingRepository {
 
     Collection<TrackingData> getAllTracking();
 
-    void updateLastUpdated(String link, long userId, Instant lastUpdated);
+    void refreshLastUpdated(String link, long userId, Instant lastUpdated);
 }
