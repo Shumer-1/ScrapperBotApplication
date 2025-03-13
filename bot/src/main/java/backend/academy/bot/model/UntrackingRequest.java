@@ -4,7 +4,8 @@ public class UntrackingRequest {
     private String link;
     private long userId;
 
-    public UntrackingRequest() {}
+    public UntrackingRequest() {
+    }
 
     public UntrackingRequest(String link, long userId) {
         this.link = link;

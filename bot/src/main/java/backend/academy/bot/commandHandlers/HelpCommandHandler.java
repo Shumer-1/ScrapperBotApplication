@@ -25,13 +25,13 @@ public class HelpCommandHandler implements CommandHandler {
             return;
         }
         String responseText =
-                """
-            /start - регистрация пользователя.\n
-            /help - вывод списка доступных команд.\n
-            /track <ссылка> - начать отслеживание ссылки.\n
-            /untrack <ссылка> - прекратить отслеживание ссылки.\n
-            /list - показать список отслеживаемых ссылок (cписок ссылок, полученных при /track)
-            """;
+            """
+                /start - регистрация пользователя.\n
+                /help - вывод списка доступных команд.\n
+                /track <ссылка> - начать отслеживание ссылки.\n
+                /untrack <ссылка> - прекратить отслеживание ссылки.\n
+                /list - показать список отслеживаемых ссылок (cписок ссылок, полученных при /track)
+                """;
         SendMessage sendMessage = new SendMessage(update.message().chat().id(), responseText);
         telegramBot.execute(sendMessage);
     }

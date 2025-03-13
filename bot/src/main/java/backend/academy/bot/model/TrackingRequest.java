@@ -8,7 +8,8 @@ public class TrackingRequest {
     private List<String> tags;
     private List<String> filters;
 
-    public TrackingRequest() {}
+    public TrackingRequest() {
+    }
 
     public TrackingRequest(String link, long userId, List<String> tags, List<String> filters) {
         this.link = link;

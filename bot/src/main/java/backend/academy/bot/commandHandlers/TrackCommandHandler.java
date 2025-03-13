@@ -22,10 +22,10 @@ public class TrackCommandHandler implements CommandHandler {
     private static final String SEP_REGEX = "\\s+";
 
     public TrackCommandHandler(
-            LinkService linkService,
-            TrackStateManager stateManager,
-            TelegramBot telegramBot,
-            ScrapperClient scrapperClient) {
+        LinkService linkService,
+        TrackStateManager stateManager,
+        TelegramBot telegramBot,
+        ScrapperClient scrapperClient) {
         this.linkService = linkService;
         this.stateManager = stateManager;
         this.telegramBot = telegramBot;
@@ -70,14 +70,15 @@ public class TrackCommandHandler implements CommandHandler {
                 state.nextStep();
                 linkService.addLink(state.getLink(), userId, state.getTags(), state.getFilters());
                 sendMessage(
-                        update,
-                        "Ссылка сохранена с тегами: " + state.getTags() + " и фильтрами: " + state.getFilters());
+                    update,
+                    "Ссылка сохранена с тегами: " + state.getTags() + " и фильтрами: " + state.getFilters());
                 scrapperClient
-                        .addTracking(state.getLink(), userId, state.getTags(), state.getFilters())
-                        .subscribe(
-                                unused -> {},
-                                error -> telegramBot.execute(new SendMessage(
-                                        update.message().chat().id(), "Ошибка передачи данных в скраппер")));
+                    .addTracking(state.getLink(), userId, state.getTags(), state.getFilters())
+                    .subscribe(
+                        unused -> {
+                        },
+                        error -> telegramBot.execute(new SendMessage(
+                            update.message().chat().id(), "Ошибка передачи данных в скраппер")));
                 stateManager.clearState(userId);
             }
         }

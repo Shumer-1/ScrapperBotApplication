@@ -4,11 +4,11 @@ import backend.academy.scrapper.client.StackOverflowClient;
 import backend.academy.scrapper.data.TrackingRepository;
 import backend.academy.scrapper.model.NotificationRequest;
 import backend.academy.scrapper.model.TrackingData;
+import java.time.Duration;
+import java.time.Instant;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import java.time.Duration;
-import java.time.Instant;
 
 @Service
 public class StackOverflowSourceHandler implements SourceHandler {

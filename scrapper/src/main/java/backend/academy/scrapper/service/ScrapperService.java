@@ -2,11 +2,11 @@ package backend.academy.scrapper.service;
 
 import backend.academy.scrapper.data.TrackingRepository;
 import backend.academy.scrapper.model.TrackingData;
+import java.util.Collection;
+import java.util.List;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
-import java.util.Collection;
-import java.util.List;
 
 @Service
 public class ScrapperService {
