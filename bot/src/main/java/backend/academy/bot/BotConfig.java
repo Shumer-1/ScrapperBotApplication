@@ -4,11 +4,13 @@ import com.pengrad.telegrambot.TelegramBot;
 import jakarta.validation.constraints.NotEmpty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Validated
 @ConfigurationProperties(prefix = "app", ignoreUnknownFields = false)
+@EnableAsync
 public record BotConfig(@NotEmpty String telegramToken) {
     @Bean
     public TelegramBot telegramBot(BotConfig botConfig) {
