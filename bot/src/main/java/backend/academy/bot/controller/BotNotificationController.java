@@ -28,22 +28,22 @@ public class BotNotificationController {
     }
 
     @Operation(
-        summary = "Receive Notification",
-        description = "Принимает уведомление от скраппера и передаёт его в NotificationService для обработки."
-    )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Уведомление успешно принято и обрабатывается."),
-        @ApiResponse(responseCode = "400", description = "Неверный формат запроса."),
-        @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера.")
-    })
+            summary = "Receive Notification",
+            description = "Принимает уведомление от скраппера и передаёт его в NotificationService для обработки.")
+    @ApiResponses(
+            value = {
+                @ApiResponse(responseCode = "200", description = "Уведомление успешно принято и обрабатывается."),
+                @ApiResponse(responseCode = "400", description = "Неверный формат запроса."),
+                @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера.")
+            })
     @PostMapping("/notify")
     @Async
     public ResponseEntity<Void> receiveNotification(@Valid @RequestBody NotificationRequest request) {
         log.info(
-            "Получено уведомление от скраппера: действие={}, сообщение={}, id пользователя={}",
-            "получено",
-            request.getMessage(),
-            request.getUserId());
+                "Получено уведомление от скраппера: действие={}, сообщение={}, id пользователя={}",
+                "получено",
+                request.getMessage(),
+                request.getUserId());
         String messageText = request.getMessage();
         notificationService.notify(messageText, request.getUserId());
         return ResponseEntity.ok().build();

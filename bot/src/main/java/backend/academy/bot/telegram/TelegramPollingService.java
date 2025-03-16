@@ -38,12 +38,12 @@ public class TelegramPollingService {
         while (!Thread.currentThread().isInterrupted()) {
             try {
                 GetUpdates getUpdates =
-                    new GetUpdates().limit(LIMIT).offset(lastUpdateId + 1).timeout(TIMEOUT);
+                        new GetUpdates().limit(LIMIT).offset(lastUpdateId + 1).timeout(TIMEOUT);
                 log.info(
-                    "Отправляем запрос обновлений: limit={}, offset={}, timeout={}",
-                    LIMIT,
-                    lastUpdateId + 1,
-                    TIMEOUT);
+                        "Отправляем запрос обновлений: limit={}, offset={}, timeout={}",
+                        LIMIT,
+                        lastUpdateId + 1,
+                        TIMEOUT);
                 GetUpdatesResponse updatesResponse = telegramBot.execute(getUpdates);
                 List<Update> updates = updatesResponse.updates();
 

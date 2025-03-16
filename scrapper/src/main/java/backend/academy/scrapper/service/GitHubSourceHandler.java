@@ -17,9 +17,7 @@ public class GitHubSourceHandler implements SourceHandler {
     private final TrackingRepository trackingRepository;
     private final WebClient webClient;
 
-    public GitHubSourceHandler(GitHubClient gitHubClient,
-                               TrackingRepository trackingRepository,
-                               WebClient webClient) {
+    public GitHubSourceHandler(GitHubClient gitHubClient, TrackingRepository trackingRepository, WebClient webClient) {
         this.gitHubClient = gitHubClient;
         this.trackingRepository = trackingRepository;
         this.webClient = webClient;
@@ -35,31 +33,34 @@ public class GitHubSourceHandler implements SourceHandler {
         String link = trackingData.getLink();
         long userId = trackingData.getUserId();
 
-        return gitHubClient.getLastUpdateTime(link)
-            .timeout(Duration.ofSeconds(5))
-            .doOnNext(newLastUpdate -> {
-                Instant previousUpdate = trackingData.getLastUpdated();
-                if (previousUpdate == null || newLastUpdate.isAfter(previousUpdate)) {
-                    // Логирование и отправка уведомления
-                    System.out.printf("GitHub обновление: %s, старое время: %s, новое время: %s%n",
-                        link, previousUpdate, newLastUpdate);
-                    sendNotification("Обновления в репозитории: " + link, userId);
-                    trackingRepository.refreshLastUpdated(link, userId, newLastUpdate);
-                }
-            })
-            .doOnError(error -> {
-                System.err.printf("Ошибка при запросе к GitHub API для %s: %s%n", link, error.getMessage());
-            })
-            .then();
+        return gitHubClient
+                .getLastUpdateTime(link)
+                .timeout(Duration.ofSeconds(5))
+                .doOnNext(newLastUpdate -> {
+                    Instant previousUpdate = trackingData.getLastUpdated();
+                    if (previousUpdate == null || newLastUpdate.isAfter(previousUpdate)) {
+                        // Логирование и отправка уведомления
+                        System.out.printf(
+                                "GitHub обновление: %s, старое время: %s, новое время: %s%n",
+                                link, previousUpdate, newLastUpdate);
+                        sendNotification("Обновления в репозитории: " + link, userId);
+                        trackingRepository.refreshLastUpdated(link, userId, newLastUpdate);
+                    }
+                })
+                .doOnError(error -> {
+                    System.err.printf("Ошибка при запросе к GitHub API для %s: %s%n", link, error.getMessage());
+                })
+                .then();
     }
 
     private void sendNotification(String message, long userId) {
         String botNotificationUrl = "http://localhost:8080/api/bot/notify";
-        webClient.post()
-            .uri(botNotificationUrl)
-            .bodyValue(new NotificationRequest(message, userId))
-            .retrieve()
-            .bodyToMono(Void.class)
-            .subscribe();
+        webClient
+                .post()
+                .uri(botNotificationUrl)
+                .bodyValue(new NotificationRequest(message, userId))
+                .retrieve()
+                .bodyToMono(Void.class)
+                .subscribe();
     }
 }

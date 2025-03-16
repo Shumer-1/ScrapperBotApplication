@@ -37,8 +37,8 @@ public class UntrackCommandHandler implements CommandHandler {
         Long chatId = update.message().chat().id();
         if (parts.length < 2) {
             sendMessage(
-                chatId,
-                "Пожалуйста, укажите ссылку, которую необходимо удалить. Пример: /untrack https://foo.bar/baz");
+                    chatId,
+                    "Пожалуйста, укажите ссылку, которую необходимо удалить. Пример: /untrack https://foo.bar/baz");
             return;
         }
 
@@ -49,11 +49,10 @@ public class UntrackCommandHandler implements CommandHandler {
         if (deleted) {
             telegramBot.execute(new SendMessage(chatId, "Ссылка успешно удалена из отслеживаемых."));
             scrapperClient
-                .removeTracking(link, userId)
-                .subscribe(
-                    unused -> {
-                    },
-                    error -> telegramBot.execute(new SendMessage(chatId, "Ошибка удаления данных в скраппер")));
+                    .removeTracking(link, userId)
+                    .subscribe(
+                            unused -> {},
+                            error -> telegramBot.execute(new SendMessage(chatId, "Ошибка удаления данных в скраппер")));
         } else {
             telegramBot.execute(new SendMessage(chatId, "Ссылка не найдена или не отслеживается."));
         }

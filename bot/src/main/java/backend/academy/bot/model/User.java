@@ -39,8 +39,7 @@ public class User {
         return lastName;
     }
 
-    public User() {
-    }
+    public User() {}
 
     public User(long telegramId, String username, String firstName, String lastName) {
         this.telegramId = telegramId;

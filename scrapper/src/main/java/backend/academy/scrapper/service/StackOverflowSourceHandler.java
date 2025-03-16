@@ -17,9 +17,8 @@ public class StackOverflowSourceHandler implements SourceHandler {
     private final TrackingRepository trackingRepository;
     private final WebClient webClient;
 
-    public StackOverflowSourceHandler(StackOverflowClient stackOverflowClient,
-                                      TrackingRepository trackingRepository,
-                                      WebClient webClient) {
+    public StackOverflowSourceHandler(
+            StackOverflowClient stackOverflowClient, TrackingRepository trackingRepository, WebClient webClient) {
         this.stackOverflowClient = stackOverflowClient;
         this.trackingRepository = trackingRepository;
         this.webClient = webClient;
@@ -36,21 +35,23 @@ public class StackOverflowSourceHandler implements SourceHandler {
         long userId = trackingData.getUserId();
         String questionId = extractQuestionId(link);
 
-        return stackOverflowClient.getQuestionLastActivity(questionId)
-            .timeout(Duration.ofSeconds(5))
-            .doOnNext(newLastActivity -> {
-                Instant previousUpdate = trackingData.getLastUpdated();
-                if (previousUpdate == null || newLastActivity.isAfter(previousUpdate)) {
-                    System.out.printf("StackOverflow обновление: %s, старое время: %s, новое время: %s%n",
-                        link, previousUpdate, newLastActivity);
-                    sendNotification("Обновления по вопросу: " + link, userId);
-                    trackingRepository.refreshLastUpdated(link, userId, newLastActivity);
-                }
-            })
-            .doOnError(error -> {
-                System.err.printf("Ошибка при запросе к StackOverflow API для %s: %s%n", link, error.getMessage());
-            })
-            .then();
+        return stackOverflowClient
+                .getQuestionLastActivity(questionId)
+                .timeout(Duration.ofSeconds(5))
+                .doOnNext(newLastActivity -> {
+                    Instant previousUpdate = trackingData.getLastUpdated();
+                    if (previousUpdate == null || newLastActivity.isAfter(previousUpdate)) {
+                        System.out.printf(
+                                "StackOverflow обновление: %s, старое время: %s, новое время: %s%n",
+                                link, previousUpdate, newLastActivity);
+                        sendNotification("Обновления по вопросу: " + link, userId);
+                        trackingRepository.refreshLastUpdated(link, userId, newLastActivity);
+                    }
+                })
+                .doOnError(error -> {
+                    System.err.printf("Ошибка при запросе к StackOverflow API для %s: %s%n", link, error.getMessage());
+                })
+                .then();
     }
 
     private String extractQuestionId(String url) {
@@ -66,12 +67,12 @@ public class StackOverflowSourceHandler implements SourceHandler {
 
     private void sendNotification(String message, long userId) {
         String botNotificationUrl = "http://localhost:8080/api/bot/notify";
-        webClient.post()
-            .uri(botNotificationUrl)
-            .bodyValue(new NotificationRequest(message, userId))
-            .retrieve()
-            .bodyToMono(Void.class)
-            .subscribe();
+        webClient
+                .post()
+                .uri(botNotificationUrl)
+                .bodyValue(new NotificationRequest(message, userId))
+                .retrieve()
+                .bodyToMono(Void.class)
+                .subscribe();
     }
 }
-

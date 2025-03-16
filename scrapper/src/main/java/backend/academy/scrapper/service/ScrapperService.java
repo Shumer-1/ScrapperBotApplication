@@ -14,8 +14,7 @@ public class ScrapperService {
     private final List<SourceHandler> sourceHandlers;
     private final TrackingRepository trackingRepository;
 
-    public ScrapperService(List<SourceHandler> sourceHandlers,
-                           TrackingRepository trackingRepository) {
+    public ScrapperService(List<SourceHandler> sourceHandlers, TrackingRepository trackingRepository) {
         this.sourceHandlers = sourceHandlers;
         this.trackingRepository = trackingRepository;
     }
@@ -27,12 +26,10 @@ public class ScrapperService {
         System.out.printf("Всего отслеживаемых записей: %d%n", allTracking.size());
 
         Flux.fromIterable(allTracking)
-            .flatMap(trackingData ->
-                Flux.fromIterable(sourceHandlers)
-                    .filter(handler -> handler.canHandle(trackingData.getLink()))
-                    .flatMap(handler -> handler.process(trackingData))
-                    .next()
-            )
-            .subscribe();
+                .flatMap(trackingData -> Flux.fromIterable(sourceHandlers)
+                        .filter(handler -> handler.canHandle(trackingData.getLink()))
+                        .flatMap(handler -> handler.process(trackingData))
+                        .next())
+                .subscribe();
     }
 }

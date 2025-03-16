@@ -25,7 +25,7 @@ public class HelpCommandHandler implements CommandHandler {
             return;
         }
         String responseText =
-            """
+                """
                 /start - регистрация пользователя.\n
                 /help - вывод списка доступных команд.\n
                 /track <ссылка> - начать отслеживание ссылки.\n

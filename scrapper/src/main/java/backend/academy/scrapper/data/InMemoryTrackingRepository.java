@@ -18,8 +18,8 @@ public class InMemoryTrackingRepository implements TrackingRepository {
     @Override
     public void addTracking(TrackingData trackingData) {
         trackingMap
-            .computeIfAbsent(trackingData.getUserId(), id -> new CopyOnWriteArrayList<>())
-            .add(trackingData);
+                .computeIfAbsent(trackingData.getUserId(), id -> new CopyOnWriteArrayList<>())
+                .add(trackingData);
     }
 
     @Override
