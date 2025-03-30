@@ -1,4 +1,4 @@
-package backend.academy.scrapper.model;
+package backend.academy.bot.model.dto;
 
 public class NotificationRequest {
     private String message;
@@ -6,16 +6,7 @@ public class NotificationRequest {
 
     public NotificationRequest() {}
 
-    public NotificationRequest(String message, long userId) {
-        this.message = message;
-        this.userId = userId;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
+    public NotificationRequest(String message) {
         this.message = message;
     }
 
@@ -25,5 +16,13 @@ public class NotificationRequest {
 
     public void setUserId(long userId) {
         this.userId = userId;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }
