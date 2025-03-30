@@ -1,4 +1,4 @@
-package backend.academy.scrapper.model;
+package backend.academy.bot.model.dto;
 
 import java.time.Instant;
 

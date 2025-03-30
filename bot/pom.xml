@@ -117,6 +117,7 @@
         <!--            <artifactId>spring-kafka-test</artifactId>-->
         <!--            <scope>test</scope>-->
         <!--        </dependency>-->
+        <!-- Spring Data JPA для работы с Hibernate -->
     </dependencies>
 
     <build>
