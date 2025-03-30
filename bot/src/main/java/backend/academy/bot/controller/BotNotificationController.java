@@ -1,15 +1,15 @@
 package backend.academy.bot.controller;
 
-import backend.academy.bot.model.NotificationRequest;
-import backend.academy.bot.service.NotificationService;
+import backend.academy.bot.model.dto.NotificationRequest;
+import backend.academy.bot.services.NotificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import java.util.concurrent.CompletableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,15 +37,16 @@ public class BotNotificationController {
                 @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера.")
             })
     @PostMapping("/notify")
-    @Async
-    public ResponseEntity<Void> receiveNotification(@Valid @RequestBody NotificationRequest request) {
-        log.info(
-                "Получено уведомление от скраппера: действие={}, сообщение={}, id пользователя={}",
-                "получено",
-                request.getMessage(),
-                request.getUserId());
-        String messageText = request.getMessage();
-        notificationService.notify(messageText, request.getUserId());
-        return ResponseEntity.ok().build();
+    public CompletableFuture<ResponseEntity<Void>> receiveNotification(
+            @Valid @RequestBody NotificationRequest request) {
+        return CompletableFuture.supplyAsync(() -> {
+            log.info(
+                    "Получено уведомление от скраппера: действие={}, сообщение={}, id пользователя={}",
+                    "получено",
+                    request.getMessage(),
+                    request.getUserId());
+            notificationService.notify(request.getMessage(), request.getUserId());
+            return ResponseEntity.ok().build();
+        });
     }
 }

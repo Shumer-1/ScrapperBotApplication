@@ -1,5 +1,6 @@
-package backend.academy.bot.commandHandlers;
+package backend.academy.bot.commandHandlers.handlers;
 
+import backend.academy.bot.commandHandlers.CommandDispatcher;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;

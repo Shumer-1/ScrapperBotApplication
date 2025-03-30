@@ -1,7 +1,7 @@
 package backend.academy.bot.states;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class TrackCommandState {
     public enum Step {
@@ -11,8 +11,8 @@ public class TrackCommandState {
     }
 
     private final String link;
-    private List<String> tags = new ArrayList<>();
-    private List<String> filters = new ArrayList<>();
+    private Set<String> tags = new HashSet<>();
+    private Set<String> filters = new HashSet<>();
     private Step step;
 
     public TrackCommandState(String link) {
@@ -24,24 +24,28 @@ public class TrackCommandState {
         return link;
     }
 
-    public List<String> getTags() {
+    public Set<String> getTags() {
         return tags;
     }
 
-    public void setTags(List<String> tags) {
+    public void setTags(Set<String> tags) {
         this.tags = tags;
     }
 
-    public List<String> getFilters() {
+    public Set<String> getFilters() {
         return filters;
+    }
+
+    public void setFilters(Set<String> filters) {
+        this.filters = filters;
+    }
+
+    public void setStep(Step step) {
+        this.step = step;
     }
 
     public Step getStep() {
         return step;
-    }
-
-    public void setFilters(List<String> filters) {
-        this.filters = filters;
     }
 
     public void nextStep() {

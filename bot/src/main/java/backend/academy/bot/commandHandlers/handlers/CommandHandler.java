@@ -1,4 +1,4 @@
-package backend.academy.bot.commandHandlers;
+package backend.academy.bot.commandHandlers.handlers;
 
 import com.pengrad.telegrambot.model.Update;
 

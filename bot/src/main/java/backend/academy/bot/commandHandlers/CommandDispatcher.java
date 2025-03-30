@@ -1,5 +1,6 @@
 package backend.academy.bot.commandHandlers;
 
+import backend.academy.bot.commandHandlers.handlers.CommandHandler;
 import com.pengrad.telegrambot.model.Update;
 import java.util.List;
 import org.springframework.stereotype.Component;

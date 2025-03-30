@@ -1,20 +1,22 @@
-package backend.academy.bot.commandHandlers;
+package backend.academy.bot.commandHandlers.handlers;
 
 import backend.academy.bot.client.ScrapperClient;
-import backend.academy.bot.service.LinkService;
+import backend.academy.bot.model.dto.UntrackingResponse;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UntrackCommandHandler implements CommandHandler {
-    private final LinkService linkService;
+
+    private static final Logger log = LoggerFactory.getLogger(UntrackCommandHandler.class);
     private final TelegramBot telegramBot;
     private final ScrapperClient scrapperClient;
 
-    public UntrackCommandHandler(LinkService linkService, TelegramBot telegramBot, ScrapperClient scrapperClient) {
-        this.linkService = linkService;
+    public UntrackCommandHandler(TelegramBot telegramBot, ScrapperClient scrapperClient) {
         this.telegramBot = telegramBot;
         this.scrapperClient = scrapperClient;
     }
@@ -27,10 +29,6 @@ public class UntrackCommandHandler implements CommandHandler {
 
     @Override
     public void handle(Update update) {
-        if (!CommandDispatcher.isIsStarted()) {
-            telegramBot.execute(new SendMessage(update.message().chat().id(), "Сначала нужно зарегистрироваться."));
-            return;
-        }
         String text = update.message().text().trim();
         String[] parts = text.split("\\s+");
 
@@ -45,20 +43,23 @@ public class UntrackCommandHandler implements CommandHandler {
         String link = parts[1];
         long userId = update.message().from().id();
 
-        boolean deleted = linkService.deleteLinkByUserIdAndLink(userId, link);
-        if (deleted) {
-            telegramBot.execute(new SendMessage(chatId, "Ссылка успешно удалена из отслеживаемых."));
-            scrapperClient
-                    .removeTracking(link, userId)
-                    .subscribe(
-                            unused -> {},
-                            error -> telegramBot.execute(new SendMessage(chatId, "Ошибка удаления данных в скраппер")));
-        } else {
-            telegramBot.execute(new SendMessage(chatId, "Ссылка не найдена или не отслеживается."));
-        }
+        scrapperClient
+                .removeTracking(link, userId)
+                .subscribe(
+                        (UntrackingResponse response) -> {
+                            if (response.isRemoved()) {
+                                sendMessage(chatId, "Ссылка успешно удалена из отслеживаемых.");
+                            } else {
+                                sendMessage(chatId, "Ссылка не найдена или не отслеживается.");
+                            }
+                        },
+                        error -> {
+                            log.error("Ошибка при удалении отслеживания: {}", error.getMessage());
+                            sendMessage(chatId, "Ошибка удаления данных в скраппер: " + error.getMessage());
+                        });
     }
 
-    private void sendMessage(long chatId, String text) {
+    private void sendMessage(Long chatId, String text) {
         SendMessage sendMessage = new SendMessage(chatId, text);
         telegramBot.execute(sendMessage);
     }
