@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  liquibase:
+    image: liquibase/liquibase
+    depends_on:
+      - postgres
+    volumes:
+      - ./migrations/liquibase:/liquibase/changelog
+    command: >
+      sh -c "liquibase --url=jdbc:postgresql://postgres:5432/${POSTGRES_DB} --username=${LIQUIBASE_USERNAME} --password=${LIQUIBASE_PASSWORD} --changeLogFile=changelog/changelog.sql clearCheckSums &&
+             liquibase --url=jdbc:postgresql://postgres:5432/${POSTGRES_DB} --username=${LIQUIBASE_USERNAME} --password=${LIQUIBASE_PASSWORD} --changeLogFile=changelog/changelog.sql update"
+
+
+volumes:
+  pgdata:
