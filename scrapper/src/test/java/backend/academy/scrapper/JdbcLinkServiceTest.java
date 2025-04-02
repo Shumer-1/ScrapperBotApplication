@@ -10,7 +10,7 @@ import backend.academy.scrapper.model.entities.Filter;
 import backend.academy.scrapper.model.entities.Link;
 import backend.academy.scrapper.model.entities.Tag;
 import backend.academy.scrapper.model.entities.User;
-import backend.academy.scrapper.service.linkService.JdbcLinkService;
+import backend.academy.scrapper.service.linkService.LinkService;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -50,7 +50,7 @@ public class JdbcLinkServiceTest {
     }
 
     @Autowired
-    private JdbcLinkService linkService;
+    private LinkService linkService;
 
     @Autowired
     private JdbcLinkRepository linkRepository;
@@ -69,7 +69,7 @@ public class JdbcLinkServiceTest {
         User user = new User();
         user.setTelegramId(111L);
         user.setUsername("testuser");
-        userRepository.save(user);
+        userRepository.saveUser(user);
     }
 
     @Test
@@ -82,7 +82,7 @@ public class JdbcLinkServiceTest {
 
         linkService.addLink(linkUrl, userId, tagNames, filterNames);
 
-        List<Link> links = linkRepository.findByUserId(userId);
+        List<Link> links = linkRepository.findByUserTelegramId(userId);
         assertThat(links).hasSize(1);
 
         Link link = links.get(0);
@@ -168,7 +168,7 @@ public class JdbcLinkServiceTest {
         String linkUrl = "http://example.com/findJdbc";
         linkService.addLink(linkUrl, userId, Set.of("commonTag"), Set.of("filterFind"));
         Tag persistedTag = linkService.getTag("commonTag");
-        List<Link> links = linkRepository.findByTagAndUserId(userId, persistedTag);
+        List<Link> links = linkRepository.findByTelegramIdAndTag(persistedTag, userId);
         assertThat(links).hasSize(1);
         assertThat(links.get(0).getLink()).isEqualTo(linkUrl);
     }

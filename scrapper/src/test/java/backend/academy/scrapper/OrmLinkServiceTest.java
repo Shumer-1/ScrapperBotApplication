@@ -10,7 +10,7 @@ import backend.academy.scrapper.model.entities.Filter;
 import backend.academy.scrapper.model.entities.Link;
 import backend.academy.scrapper.model.entities.Tag;
 import backend.academy.scrapper.model.entities.User;
-import backend.academy.scrapper.service.linkService.OrmLinkService;
+import backend.academy.scrapper.service.linkService.LinkService;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -46,7 +46,7 @@ public class OrmLinkServiceTest {
     }
 
     @Autowired
-    private OrmLinkService linkService;
+    private LinkService linkService;
 
     @Autowired
     private OrmLinkRepository linkRepository;
