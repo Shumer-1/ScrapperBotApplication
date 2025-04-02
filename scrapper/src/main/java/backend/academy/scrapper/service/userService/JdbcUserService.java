@@ -17,6 +17,7 @@ public class JdbcUserService implements UserService {
         this.userRepository = userRepository;
     }
 
+    @Override
     @Transactional
     public boolean save(long telegramId, String username) {
         Optional<User> existingUser = userRepository.findByTelegramId(telegramId);
@@ -26,15 +27,17 @@ public class JdbcUserService implements UserService {
         User user = new User();
         user.setTelegramId(telegramId);
         user.setUsername(username);
-        userRepository.save(user);
+        userRepository.saveUser(user);
         return true;
     }
 
+    @Override
     @Transactional(readOnly = true)
     public boolean existsByTelegramId(long telegramId) {
         return userRepository.findByTelegramId(telegramId).isPresent();
     }
 
+    @Override
     @Transactional(readOnly = true)
     public User getUserByTelegramId(long telegramId) {
         return userRepository

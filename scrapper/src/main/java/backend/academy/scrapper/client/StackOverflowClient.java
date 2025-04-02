@@ -25,30 +25,32 @@ public class StackOverflowClient {
 
     public Mono<String> getQuestionInfo(String questionId) {
         String url = String.format(
-            "https://api.stackexchange.com/2.3/questions/%s?order=desc&sort=activity&site=stackoverflow&key=%s",
-            questionId, key);
+                "https://api.stackexchange.com/2.3/questions/%s?order=desc&sort=activity&site=stackoverflow&key=%s",
+                questionId, key);
         return webClient.get().uri(url).retrieve().bodyToMono(String.class);
     }
 
     public Mono<StackOverflowUpdate> getLatestAnswer(String questionId) {
         String answersUrl = String.format(
-            "https://api.stackexchange.com/2.3/questions/%s/answers?order=desc&sort=creation&site=stackoverflow&filter=withbody&key=%s&pagesize=1",
-            questionId, key);
+                "https://api.stackexchange.com/2.3/questions/%s/answers?order=desc&sort=creation&site=stackoverflow&filter=withbody&key=%s&pagesize=1",
+                questionId, key);
         return getLatest(questionId, answersUrl);
     }
 
     public Mono<StackOverflowUpdate> getLatestComment(String questionId) {
         String commentsUrl = String.format(
-            "https://api.stackexchange.com/2.3/questions/%s/comments?order=desc&sort=creation&site=stackoverflow&filter=withbody&key=%s&pagesize=1",
-            questionId, key);
+                "https://api.stackexchange.com/2.3/questions/%s/comments?order=desc&sort=creation&site=stackoverflow&filter=withbody&key=%s&pagesize=1",
+                questionId, key);
         return getLatest(questionId, commentsUrl);
     }
 
     private Mono<StackOverflowUpdate> getLatest(String questionId, String url) {
-        return webClient.get().uri(url)
-            .retrieve()
-            .bodyToMono(JsonNode.class)
-            .flatMap(json -> processLatest(json, questionId));
+        return webClient
+                .get()
+                .uri(url)
+                .retrieve()
+                .bodyToMono(JsonNode.class)
+                .flatMap(json -> processLatest(json, questionId));
     }
 
     private Mono<StackOverflowUpdate> processLatest(JsonNode json, String questionId) {
@@ -68,8 +70,7 @@ public class StackOverflowClient {
                     if (infoItems != null && infoItems.isArray() && infoItems.size() > 0) {
                         title = infoItems.get(0).get("title").asText();
                     }
-                    StackOverflowUpdate update =
-                        new StackOverflowUpdate(title, author, creationTime, preview);
+                    StackOverflowUpdate update = new StackOverflowUpdate(title, author, creationTime, preview);
                     return Mono.just(update);
                 } catch (Exception e) {
                     return Mono.error(e);

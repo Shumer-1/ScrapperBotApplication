@@ -1,5 +1,6 @@
 package backend.academy.scrapper.data.jdbcRepositories;
 
+import backend.academy.scrapper.data.TagRepository;
 import backend.academy.scrapper.model.entities.Tag;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -15,7 +17,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class JdbcTagRepository {
+@ConditionalOnProperty(name = "access-type", havingValue = "SQL")
+public class JdbcTagRepository implements TagRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private static final Logger log = LoggerFactory.getLogger(JdbcTagRepository.class);
@@ -42,10 +45,7 @@ public class JdbcTagRepository {
 
     public Tag save(Tag tag) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(
-            connection -> createPreparedStatement(connection, tag),
-            keyHolder
-        );
+        jdbcTemplate.update(connection -> createPreparedStatement(connection, tag), keyHolder);
         Number key = keyHolder.getKey();
         if (key == null) {
             throw new IllegalStateException("Не удалось получить сгенерированный идентификатор");
@@ -55,7 +55,7 @@ public class JdbcTagRepository {
     }
 
     private PreparedStatement createPreparedStatement(java.sql.Connection connection, Tag tag) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement(INSERT_SQL, new String[]{"id"});
+        PreparedStatement ps = connection.prepareStatement(INSERT_SQL, new String[] {"id"});
         try {
             ps.setString(1, tag.getTag());
             return ps;

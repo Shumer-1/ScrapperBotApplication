@@ -15,6 +15,7 @@ public class HttpNotificationService implements NotificationService {
         this.webClient = webClient;
     }
 
+    @Override
     public void sendNotification(String message, long userId) {
         log.info("Отправлено уведомление {}", message);
         String botNotificationUrl = "http://localhost:8080/api/bot/notify";
