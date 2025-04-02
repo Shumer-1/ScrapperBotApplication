@@ -2,6 +2,8 @@ package backend.academy.scrapper.data.jdbcRepositories;
 
 import backend.academy.scrapper.model.entities.Filter;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -23,12 +25,14 @@ public class JdbcFilterRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private final RowMapper<Filter> filterRowMapper = (rs, rowNum) -> {
+    private Filter mapFilter(ResultSet rs) throws SQLException {
         Filter filter = new Filter();
         filter.setId(rs.getLong("id"));
         filter.setFilter(rs.getString("filter"));
         return filter;
-    };
+    }
+
+    private final RowMapper<Filter> filterRowMapper = (rs, rowNum) -> mapFilter(rs);
 
     public Optional<Filter> findByFilter(String filterValue) {
         String sql = "SELECT * FROM filter WHERE filter = ?";
@@ -39,26 +43,28 @@ public class JdbcFilterRepository {
     public Filter save(Filter filter) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
-                connection -> {
-                    PreparedStatement ps = connection.prepareStatement(INSERT_SQL, new String[] {"id"});
-                    try {
-                        ps.setString(1, filter.getFilter());
-                        return ps;
-                    } catch (Exception e) {
-                        try {
-                            ps.close();
-                        } catch (Exception closeEx) {
-                            log.error("Ошибка с PreparedStatement: {}", closeEx.getMessage());
-                        }
-                        throw e;
-                    }
-                },
-                keyHolder);
+            connection -> createPreparedStatement(connection, filter),
+            keyHolder);
         Number key = keyHolder.getKey();
         if (key == null) {
             throw new IllegalStateException("Не удалось получить сгенерированный идентификатор");
         }
         filter.setId(key.longValue());
         return filter;
+    }
+
+    private PreparedStatement createPreparedStatement(java.sql.Connection connection, Filter filter) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement(INSERT_SQL, new String[]{"id"});
+        try {
+            ps.setString(1, filter.getFilter());
+            return ps;
+        } catch (Exception e) {
+            try {
+                ps.close();
+            } catch (Exception closeEx) {
+                log.error("Ошибка с PreparedStatement: {}", closeEx.getMessage());
+            }
+            throw e;
+        }
     }
 }

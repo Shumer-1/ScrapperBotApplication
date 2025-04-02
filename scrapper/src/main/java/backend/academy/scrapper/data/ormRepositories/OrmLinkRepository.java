@@ -12,27 +12,30 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface OrmLinkRepository extends JpaRepository<Link, Long> {
+
+    String USER_TELEGRAM_FILTER = "l.user.telegramId = :userId";
+    String LINK_NAME_FILTER = "l.link = :linkName";
+
     List<Link> findByUserId(Long userId);
 
-    @Query("SELECT l FROM Link l WHERE l.user.telegramId = :userId")
+    @Query("SELECT l FROM Link l WHERE " + USER_TELEGRAM_FILTER)
     List<Link> findByTelegramId(@Param("userId") Long userId);
 
-    @Query("SELECT l FROM Link l WHERE l.user.telegramId = :userId AND l.link = :linkName")
+    @Query("SELECT l FROM Link l WHERE " + USER_TELEGRAM_FILTER + " AND " + LINK_NAME_FILTER)
     Link findByUserIdAndLink(@Param("userId") Long userId, @Param("linkName") String link);
 
     @Modifying
-    @Query("UPDATE Link l SET l.lastUpdated = :time WHERE l.link = :linkName AND l.user.telegramId = :userId")
-    void refreshLastUpdated(
-            @Param("linkName") String linkName, @Param("userId") long userId, @Param("time") Instant time);
+    @Query("UPDATE Link l SET l.lastUpdated = :time WHERE " + LINK_NAME_FILTER + " AND " + USER_TELEGRAM_FILTER)
+    void refreshLastUpdated(@Param("linkName") String linkName,
+                            @Param("userId") long userId,
+                            @Param("time") Instant time);
 
-    @Query(
-            """
-                SELECT l
-                FROM Link l
-                     JOIN l.user u
-                     JOIN l.tags t
-                WHERE u.telegramId = :userId
-                  AND t = :tag
-            """)
+    @Query("""
+        SELECT l
+        FROM Link l
+        JOIN l.user u
+        JOIN l.tags t
+        WHERE u.telegramId = :userId AND t = :tag
+        """)
     List<Link> findByTelegramIdAndTag(@Param("tag") Tag tag, @Param("userId") long userId);
 }

@@ -32,31 +32,38 @@ public class OrmLinkService implements LinkService {
     private final OrmFilterRepository filterRepository;
 
     public OrmLinkService(
-            OrmLinkRepository linkRepository,
-            OrmUserRepository userRepository,
-            OrmTagRepository tagRepository,
-            OrmFilterRepository filterRepository) {
+        OrmLinkRepository linkRepository,
+        OrmUserRepository userRepository,
+        OrmTagRepository tagRepository,
+        OrmFilterRepository filterRepository) {
         this.linkRepository = linkRepository;
         this.userRepository = userRepository;
         this.tagRepository = tagRepository;
         this.filterRepository = filterRepository;
     }
 
+    private Tag getOrCreateTag(String tagName) {
+        return tagRepository.findByTag(tagName)
+            .orElseGet(() -> tagRepository.save(new Tag(tagName)));
+    }
+
+    private Filter getOrCreateFilter(String filterName) {
+        return filterRepository.findByFilter(filterName)
+            .orElseGet(() -> filterRepository.save(new Filter(filterName)));
+    }
+
     @Transactional
     public void addLink(String linkUrl, Long userId, Set<String> tagNames, Set<String> filterNames) {
-        User user = userRepository
-                .findByTelegramId(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userRepository.findByTelegramId(userId)
+            .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         Set<Tag> tags = tagNames.stream()
-                .map(tagName -> tagRepository.findByTag(tagName).orElseGet(() -> tagRepository.save(new Tag(tagName))))
-                .collect(Collectors.toSet());
+            .map(this::getOrCreateTag)
+            .collect(Collectors.toSet());
 
         Set<Filter> filters = filterNames.stream()
-                .map(filterName -> filterRepository
-                        .findByFilter(filterName)
-                        .orElseGet(() -> filterRepository.save(new Filter(filterName))))
-                .collect(Collectors.toSet());
+            .map(this::getOrCreateFilter)
+            .collect(Collectors.toSet());
 
         Link newLink = new Link();
         newLink.setLink(linkUrl);
@@ -84,16 +91,12 @@ public class OrmLinkService implements LinkService {
 
     @Transactional
     public void saveTag(Tag tag) {
-        if (!tagRepository.findByTag(tag.getTag()).isPresent()) {
-            tagRepository.save(tag);
-        }
+        getOrCreateTag(tag.getTag());
     }
 
     @Transactional
     public void saveFilter(Filter filter) {
-        if (!filterRepository.findByFilter(filter.getFilter()).isPresent()) {
-            filterRepository.save(filter);
-        }
+        getOrCreateFilter(filter.getFilter());
     }
 
     @Transactional

@@ -30,31 +30,38 @@ public class JdbcLinkService implements LinkService {
     private final JdbcFilterRepository filterRepository;
 
     public JdbcLinkService(
-            JdbcLinkRepository linkRepository,
-            JdbcUserRepository userRepository,
-            JdbcTagRepository tagRepository,
-            JdbcFilterRepository filterRepository) {
+        JdbcLinkRepository linkRepository,
+        JdbcUserRepository userRepository,
+        JdbcTagRepository tagRepository,
+        JdbcFilterRepository filterRepository) {
         this.linkRepository = linkRepository;
         this.userRepository = userRepository;
         this.tagRepository = tagRepository;
         this.filterRepository = filterRepository;
     }
 
+    private Tag getOrCreateTag(String tagName) {
+        return tagRepository.findByTag(tagName)
+            .orElseGet(() -> tagRepository.save(new Tag(tagName)));
+    }
+
+    private Filter getOrCreateFilter(String filterName) {
+        return filterRepository.findByFilter(filterName)
+            .orElseGet(() -> filterRepository.save(new Filter(filterName)));
+    }
+
     @Transactional
     public void addLink(String linkUrl, Long telegramId, Set<String> tagNames, Set<String> filterNames) {
-        User user = userRepository
-                .findByTelegramId(telegramId)
-                .orElseThrow(() -> new IllegalArgumentException("Пользователь не найден"));
+        User user = userRepository.findByTelegramId(telegramId)
+            .orElseThrow(() -> new IllegalArgumentException("Пользователь не найден"));
 
         Set<Tag> tags = tagNames.stream()
-                .map(tagName -> tagRepository.findByTag(tagName).orElseGet(() -> tagRepository.save(new Tag(tagName))))
-                .collect(Collectors.toSet());
+            .map(this::getOrCreateTag)
+            .collect(Collectors.toSet());
 
         Set<Filter> filters = filterNames.stream()
-                .map(filterName -> filterRepository
-                        .findByFilter(filterName)
-                        .orElseGet(() -> filterRepository.save(new Filter(filterName))))
-                .collect(Collectors.toSet());
+            .map(this::getOrCreateFilter)
+            .collect(Collectors.toSet());
 
         Link link = new Link();
         link.setLink(linkUrl);
@@ -83,17 +90,14 @@ public class JdbcLinkService implements LinkService {
     @Override
     @Transactional
     public void saveTag(Tag tag) {
-        if (!tagRepository.findByTag(tag.getTag()).isPresent()) {
-            tagRepository.save(tag);
-        }
+        // Используем getOrCreateTag для избежания дублирования логики
+        getOrCreateTag(tag.getTag());
     }
 
     @Override
     @Transactional
     public void saveFilter(Filter filter) {
-        if (!filterRepository.findByFilter(filter.getFilter()).isPresent()) {
-            filterRepository.save(filter);
-        }
+        getOrCreateFilter(filter.getFilter());
     }
 
     @Override
