@@ -40,21 +40,21 @@ public class JdbcTagRepository {
     public Tag save(Tag tag) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
-            connection -> {
-                PreparedStatement ps = connection.prepareStatement(INSERT_SQL, new String[]{"id"});
-                try {
-                    ps.setString(1, tag.getTag());
-                    return ps;
-                } catch (Exception e) {
+                connection -> {
+                    PreparedStatement ps = connection.prepareStatement(INSERT_SQL, new String[] {"id"});
                     try {
-                        ps.close();
-                    } catch (Exception closeEx) {
-                        log.error("Ошибка с PreparedStatement: {}", closeEx.getMessage());
+                        ps.setString(1, tag.getTag());
+                        return ps;
+                    } catch (Exception e) {
+                        try {
+                            ps.close();
+                        } catch (Exception closeEx) {
+                            log.error("Ошибка с PreparedStatement: {}", closeEx.getMessage());
+                        }
+                        throw e;
                     }
-                    throw e;
-                }
-            },
-            keyHolder);
+                },
+                keyHolder);
         Number key = keyHolder.getKey();
         if (key == null) {
             throw new IllegalStateException("Не удалось получить сгенерированный идентификатор");
@@ -63,4 +63,3 @@ public class JdbcTagRepository {
         return tag;
     }
 }
-

@@ -23,10 +23,10 @@ public interface OrmLinkRepository extends JpaRepository<Link, Long> {
     @Modifying
     @Query("UPDATE Link l SET l.lastUpdated = :time WHERE l.link = :linkName AND l.user.telegramId = :userId")
     void refreshLastUpdated(
-        @Param("linkName") String linkName, @Param("userId") long userId, @Param("time") Instant time);
+            @Param("linkName") String linkName, @Param("userId") long userId, @Param("time") Instant time);
 
     @Query(
-        """
+            """
                 SELECT l
                 FROM Link l
                      JOIN l.user u

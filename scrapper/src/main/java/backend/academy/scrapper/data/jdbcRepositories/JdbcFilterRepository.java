@@ -1,6 +1,5 @@
 package backend.academy.scrapper.data.jdbcRepositories;
 
-import backend.academy.scrapper.client.GitHubClient;
 import backend.academy.scrapper.model.entities.Filter;
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -19,7 +18,6 @@ public class JdbcFilterRepository {
     private final JdbcTemplate jdbcTemplate;
     private static final Logger log = LoggerFactory.getLogger(JdbcFilterRepository.class);
     private static final String INSERT_SQL = "INSERT INTO filter (filter) VALUES (?) RETURNING id";
-
 
     public JdbcFilterRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -41,21 +39,21 @@ public class JdbcFilterRepository {
     public Filter save(Filter filter) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
-            connection -> {
-                PreparedStatement ps = connection.prepareStatement(INSERT_SQL, new String[] {"id"});
-                try {
-                    ps.setString(1, filter.getFilter());
-                    return ps;
-                } catch (Exception e) {
+                connection -> {
+                    PreparedStatement ps = connection.prepareStatement(INSERT_SQL, new String[] {"id"});
                     try {
-                        ps.close();
-                    } catch (Exception closeEx) {
-                        log.error("Ошибка с PreparedStatement: {}", closeEx.getMessage());
+                        ps.setString(1, filter.getFilter());
+                        return ps;
+                    } catch (Exception e) {
+                        try {
+                            ps.close();
+                        } catch (Exception closeEx) {
+                            log.error("Ошибка с PreparedStatement: {}", closeEx.getMessage());
+                        }
+                        throw e;
                     }
-                    throw e;
-                }
-            },
-            keyHolder);
+                },
+                keyHolder);
         Number key = keyHolder.getKey();
         if (key == null) {
             throw new IllegalStateException("Не удалось получить сгенерированный идентификатор");
@@ -63,5 +61,4 @@ public class JdbcFilterRepository {
         filter.setId(key.longValue());
         return filter;
     }
-
 }

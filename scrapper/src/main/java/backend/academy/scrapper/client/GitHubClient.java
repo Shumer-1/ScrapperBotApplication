@@ -2,7 +2,6 @@ package backend.academy.scrapper.client;
 
 import backend.academy.scrapper.ScrapperConfig;
 import backend.academy.scrapper.model.dto.GitHubIssue;
-import backend.academy.scrapper.service.sourceHandlers.GitHubSourceHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.time.Instant;
 import org.slf4j.Logger;

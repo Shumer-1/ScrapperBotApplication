@@ -18,9 +18,8 @@ public class JdbcUserRepository {
     private final JdbcTemplate jdbcTemplate;
     private static final Logger log = LoggerFactory.getLogger(JdbcUserRepository.class);
 
-    private final static String FIND_BY_TELEGRAM_ID_SQL = "SELECT * FROM users WHERE tg_id = ?";
-    private final static String SAVE_SQL = "INSERT INTO users (tg_id, username) VALUES (?, ?) RETURNING id";
-
+    private static final String FIND_BY_TELEGRAM_ID_SQL = "SELECT * FROM users WHERE tg_id = ?";
+    private static final String SAVE_SQL = "INSERT INTO users (tg_id, username) VALUES (?, ?) RETURNING id";
 
     public JdbcUserRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -45,27 +44,26 @@ public class JdbcUserRepository {
         }
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
-            connection -> {
-                PreparedStatement ps = connection.prepareStatement(SAVE_SQL, new String[]{"id"});
-                try {
-                    ps.setLong(1, user.getTelegramId());
-                    ps.setString(2, user.getUsername());
-                    return ps;
-                } catch (Exception e) {
+                connection -> {
+                    PreparedStatement ps = connection.prepareStatement(SAVE_SQL, new String[] {"id"});
                     try {
-                        ps.close();
-                    } catch (Exception closeEx) {
-                        log.error("Ошибка с PreparedStatement: {}", closeEx.getMessage());
+                        ps.setLong(1, user.getTelegramId());
+                        ps.setString(2, user.getUsername());
+                        return ps;
+                    } catch (Exception e) {
+                        try {
+                            ps.close();
+                        } catch (Exception closeEx) {
+                            log.error("Ошибка с PreparedStatement: {}", closeEx.getMessage());
+                        }
+                        throw e;
                     }
-                    throw e;
-                }
-            },
-            keyHolder);
+                },
+                keyHolder);
         Number key = keyHolder.getKey();
         if (key == null) {
             throw new IllegalStateException("Не удалось получить сгенерированный идентификатор");
         }
         user.setId(key.longValue());
     }
-
 }
