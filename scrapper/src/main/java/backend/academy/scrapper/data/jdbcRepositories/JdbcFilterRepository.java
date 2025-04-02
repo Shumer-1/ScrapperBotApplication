@@ -1,9 +1,12 @@
 package backend.academy.scrapper.data.jdbcRepositories;
 
+import backend.academy.scrapper.client.GitHubClient;
 import backend.academy.scrapper.model.entities.Filter;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -14,6 +17,9 @@ import org.springframework.stereotype.Repository;
 public class JdbcFilterRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private static final Logger log = LoggerFactory.getLogger(JdbcFilterRepository.class);
+    private static final String INSERT_SQL = "INSERT INTO filter (filter) VALUES (?) RETURNING id";
+
 
     public JdbcFilterRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -33,16 +39,29 @@ public class JdbcFilterRepository {
     }
 
     public Filter save(Filter filter) {
-        String sql = "INSERT INTO filter (filter) VALUES (?) RETURNING id";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
-                connection -> {
-                    PreparedStatement ps = connection.prepareStatement(sql, new String[] {"id"});
+            connection -> {
+                PreparedStatement ps = connection.prepareStatement(INSERT_SQL, new String[] {"id"});
+                try {
                     ps.setString(1, filter.getFilter());
                     return ps;
-                },
-                keyHolder);
-        filter.setId(keyHolder.getKey().longValue());
+                } catch (Exception e) {
+                    try {
+                        ps.close();
+                    } catch (Exception closeEx) {
+                        log.error("Ошибка с PreparedStatement: {}", closeEx.getMessage());
+                    }
+                    throw e;
+                }
+            },
+            keyHolder);
+        Number key = keyHolder.getKey();
+        if (key == null) {
+            throw new IllegalStateException("Не удалось получить сгенерированный идентификатор");
+        }
+        filter.setId(key.longValue());
         return filter;
     }
+
 }

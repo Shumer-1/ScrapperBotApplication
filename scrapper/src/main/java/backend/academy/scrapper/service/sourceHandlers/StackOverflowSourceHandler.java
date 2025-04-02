@@ -6,6 +6,7 @@ import backend.academy.scrapper.model.entities.Link;
 import backend.academy.scrapper.service.linkService.LinkService;
 import backend.academy.scrapper.service.notification.NotificationService;
 import java.time.Instant;
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -48,18 +49,9 @@ public class StackOverflowSourceHandler implements SourceHandler {
                 .flatMap(tuple -> {
                     StackOverflowUpdate answer = tuple.getT1();
                     StackOverflowUpdate comment = tuple.getT2();
-                    if (answer == null && comment == null) {
-                        return Mono.empty();
-                    }
-                    if (answer == null) {
-                        return Mono.just(comment);
-                    }
-                    if (comment == null) {
-                        return Mono.just(answer);
-                    }
                     return Mono.just(answer.getCreationTime().isAfter(comment.getCreationTime()) ? answer : comment);
                 })
-                .filter(update -> update != null)
+                .filter(Objects::nonNull)
                 .doOnNext(update -> {
                     Instant previousUpdate = link.getLastUpdated();
                     if (previousUpdate == null || update.getCreationTime().isAfter(previousUpdate)) {
@@ -70,7 +62,7 @@ public class StackOverflowSourceHandler implements SourceHandler {
                                 update.getCreationTime(),
                                 update.getBodyPreview());
                         String message = String.format(
-                                "Новое обновление по вопросу:\nТема: %s\nАвтор: %s\nСоздан: %s\nПревью: %s",
+                                "Новое обновление по вопросу:%nТема: %s%nАвтор: %s%nСоздан: %s%nПревью: %s",
                                 update.getQuestionTitle(),
                                 update.getAuthor(),
                                 update.getCreationTime(),

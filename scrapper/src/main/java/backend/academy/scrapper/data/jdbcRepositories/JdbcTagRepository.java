@@ -4,6 +4,8 @@ import backend.academy.scrapper.model.entities.Tag;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -14,6 +16,9 @@ import org.springframework.stereotype.Repository;
 public class JdbcTagRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private static final Logger log = LoggerFactory.getLogger(JdbcTagRepository.class);
+
+    private static final String INSERT_SQL = "INSERT INTO tags (tag) VALUES (?) RETURNING id";
 
     public JdbcTagRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -33,16 +38,29 @@ public class JdbcTagRepository {
     }
 
     public Tag save(Tag tag) {
-        String sql = "INSERT INTO tags (tag) VALUES (?) RETURNING id";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
-                connection -> {
-                    PreparedStatement ps = connection.prepareStatement(sql, new String[] {"id"});
+            connection -> {
+                PreparedStatement ps = connection.prepareStatement(INSERT_SQL, new String[]{"id"});
+                try {
                     ps.setString(1, tag.getTag());
                     return ps;
-                },
-                keyHolder);
-        tag.setId(keyHolder.getKey().longValue());
+                } catch (Exception e) {
+                    try {
+                        ps.close();
+                    } catch (Exception closeEx) {
+                        log.error("Ошибка с PreparedStatement: {}", closeEx.getMessage());
+                    }
+                    throw e;
+                }
+            },
+            keyHolder);
+        Number key = keyHolder.getKey();
+        if (key == null) {
+            throw new IllegalStateException("Не удалось получить сгенерированный идентификатор");
+        }
+        tag.setId(key.longValue());
         return tag;
     }
 }
+

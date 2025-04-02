@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono;
 
 @Component
 public class GitHubClient {
-    private static final Logger log = LoggerFactory.getLogger(GitHubSourceHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(GitHubClient.class);
     private final WebClient webClient;
     private final String githubToken;
 

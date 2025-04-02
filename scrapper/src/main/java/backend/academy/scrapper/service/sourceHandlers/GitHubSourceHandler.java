@@ -50,7 +50,7 @@ public class GitHubSourceHandler implements SourceHandler {
                                 issue.getCreatedAt(),
                                 issue.getBodyPreview());
                         String message = String.format(
-                                "Новый PR/Issue:\nНазвание: %s\nАвтор: %s\nСоздан: %s\nОписание: %s",
+                                "Новый PR/Issue:%nНазвание: %s%nАвтор: %s%nСоздан: %s%nОписание: %s",
                                 issue.getTitle(), issue.getUsername(), issue.getCreatedAt(), issue.getBodyPreview());
                         notificationService.sendNotification(message, userId);
                         linkService.refreshLastUpdated(linkName, userId, issue.getCreatedAt());
