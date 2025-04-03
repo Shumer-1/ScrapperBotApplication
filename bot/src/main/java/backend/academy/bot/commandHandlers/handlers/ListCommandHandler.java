@@ -39,7 +39,9 @@ public class ListCommandHandler implements CommandHandler {
                 .subscribe(
                         links -> {
                             if (links.isEmpty()) {
-                                log.info("Ответ на /list: пусто для {}", update.message().from().id());
+                                log.info(
+                                        "Ответ на /list: пусто для {}",
+                                        update.message().from().id());
                                 sendMessage(update, "Пока тут ничего нет");
                             } else {
                                 StringBuilder sb = new StringBuilder();
@@ -50,7 +52,10 @@ public class ListCommandHandler implements CommandHandler {
                                             .append(link.getLink())
                                             .append("\n");
                                 }
-                                log.info("Ответ на /list: есть данные для {}:{}", update.message().from().id(), sb);
+                                log.info(
+                                        "Ответ на /list: есть данные для {}:{}",
+                                        update.message().from().id(),
+                                        sb);
                                 sendMessage(update, sb.toString());
                             }
                         },
