@@ -131,6 +131,7 @@ public class ScrapperClient {
     }
 
     public Mono<List<Link>> getLinksByUserId(long userId) {
+        log.info("Запрос на получение ссылок по telegramId от {}", userId);
         return webClient
                 .get()
                 .uri(scrapperBaseUrl + "/api/scrapper/links?userId=" + userId)

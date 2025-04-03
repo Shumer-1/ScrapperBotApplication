@@ -32,12 +32,14 @@ public class ListCommandHandler implements CommandHandler {
         if (update.message() == null || update.message().from() == null) {
             return;
         }
+        log.info("Обрабатываем команду /list от {}", update.message().from().id());
         long telegramId = Long.parseLong(update.message().from().id().toString());
         scrapperClient
                 .getLinksByUserId(telegramId)
                 .subscribe(
                         links -> {
                             if (links.isEmpty()) {
+                                log.info("Ответ на /list: пусто для {}", update.message().from().id());
                                 sendMessage(update, "Пока тут ничего нет");
                             } else {
                                 StringBuilder sb = new StringBuilder();
@@ -48,6 +50,7 @@ public class ListCommandHandler implements CommandHandler {
                                             .append(link.getLink())
                                             .append("\n");
                                 }
+                                log.info("Ответ на /list: есть данные для {}:{}", update.message().from().id(), sb);
                                 sendMessage(update, sb.toString());
                             }
                         },
