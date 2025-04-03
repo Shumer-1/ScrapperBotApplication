@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import backend.academy.scrapper.data.jdbcRepositories.JdbcUserRepository;
 import backend.academy.scrapper.model.entities.User;
-import backend.academy.scrapper.service.userService.JdbcUserService;
+import backend.academy.scrapper.service.userService.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,7 +33,7 @@ public class JdbcUserServiceTest {
     }
 
     @Autowired
-    private JdbcUserService userService;
+    private UserService userService;
 
     @Autowired
     private JdbcUserRepository userRepository;

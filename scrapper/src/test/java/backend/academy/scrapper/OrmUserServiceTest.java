@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import backend.academy.scrapper.data.ormRepositories.OrmUserRepository;
 import backend.academy.scrapper.model.entities.User;
-import backend.academy.scrapper.service.userService.OrmUserService;
+import backend.academy.scrapper.service.userService.UserService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ public class OrmUserServiceTest {
     }
 
     @Autowired
-    private OrmUserService userService;
+    private UserService userService;
 
     @Autowired
     private OrmUserRepository userRepository;
