@@ -2,16 +2,18 @@ package backend.academy.scrapper.data.jdbcRepositories;
 
 import backend.academy.scrapper.data.UserRepository;
 import backend.academy.scrapper.model.entities.User;
-import java.sql.PreparedStatement;
+import backend.academy.scrapper.model.queries.UserQuery;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -20,14 +22,10 @@ import org.springframework.stereotype.Repository;
 @ConditionalOnProperty(name = "access-type", havingValue = "SQL")
 public class JdbcUserRepository implements UserRepository {
 
-    private final JdbcTemplate jdbcTemplate;
-    private static final Logger log = LoggerFactory.getLogger(JdbcUserRepository.class);
+    private final NamedParameterJdbcTemplate namedJdbcTemplate;
 
-    private static final String FIND_BY_TELEGRAM_ID_SQL = "SELECT * FROM users WHERE tg_id = ?";
-    private static final String SAVE_SQL = "INSERT INTO users (tg_id, username) VALUES (?, ?) RETURNING id";
-
-    public JdbcUserRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public JdbcUserRepository(NamedParameterJdbcTemplate namedJdbcTemplate) {
+        this.namedJdbcTemplate = namedJdbcTemplate;
     }
 
     private User mapUser(ResultSet rs) throws SQLException {
@@ -40,38 +38,29 @@ public class JdbcUserRepository implements UserRepository {
 
     private final RowMapper<User> userRowMapper = (rs, rowNum) -> mapUser(rs);
 
+    @Override
     public Optional<User> findByTelegramId(Long telegramId) {
-        List<User> users = jdbcTemplate.query(FIND_BY_TELEGRAM_ID_SQL, userRowMapper, telegramId);
+        String sql = UserQuery.FIND_BY_TELEGRAM_ID.getSql();
+        Map<String, Object> params = Collections.singletonMap("telegramId", telegramId);
+        List<User> users = namedJdbcTemplate.query(sql, params, userRowMapper);
         return users.isEmpty() ? Optional.empty() : Optional.of(users.get(0));
     }
 
+    @Override
     public User saveUser(User user) {
         if (findByTelegramId(user.getTelegramId()).isPresent()) {
             return user;
         }
+        String sql = UserQuery.SAVE_USER.getSql();
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> createPreparedStatement(connection, user), keyHolder);
-        Number key = keyHolder.getKey();
-        if (key == null) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("telegramId", user.getTelegramId());
+        params.put("username", user.getUsername());
+        namedJdbcTemplate.update(sql, new MapSqlParameterSource(params), keyHolder, new String[]{"id"});
+        if (keyHolder.getKey() == null) {
             throw new IllegalStateException("Не удалось получить сгенерированный идентификатор");
         }
-        user.setId(key.longValue());
+        user.setId(keyHolder.getKey().longValue());
         return user;
-    }
-
-    private PreparedStatement createPreparedStatement(java.sql.Connection connection, User user) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement(SAVE_SQL, new String[] {"id"});
-        try {
-            ps.setLong(1, user.getTelegramId());
-            ps.setString(2, user.getUsername());
-            return ps;
-        } catch (Exception e) {
-            try {
-                ps.close();
-            } catch (Exception closeEx) {
-                log.error("Ошибка с PreparedStatement: {}", closeEx.getMessage());
-            }
-            throw e;
-        }
     }
 }

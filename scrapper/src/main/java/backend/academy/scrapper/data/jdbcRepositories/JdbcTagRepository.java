@@ -2,16 +2,18 @@ package backend.academy.scrapper.data.jdbcRepositories;
 
 import backend.academy.scrapper.data.TagRepository;
 import backend.academy.scrapper.model.entities.Tag;
-import java.sql.PreparedStatement;
+import backend.academy.scrapper.model.queries.TagQuery;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -20,12 +22,10 @@ import org.springframework.stereotype.Repository;
 @ConditionalOnProperty(name = "access-type", havingValue = "SQL")
 public class JdbcTagRepository implements TagRepository {
 
-    private final JdbcTemplate jdbcTemplate;
-    private static final Logger log = LoggerFactory.getLogger(JdbcTagRepository.class);
-    private static final String INSERT_SQL = "INSERT INTO tags (tag) VALUES (?) RETURNING id";
+    private final NamedParameterJdbcTemplate namedJdbcTemplate;
 
-    public JdbcTagRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public JdbcTagRepository(NamedParameterJdbcTemplate namedJdbcTemplate) {
+        this.namedJdbcTemplate = namedJdbcTemplate;
     }
 
     private Tag mapTag(ResultSet rs) throws SQLException {
@@ -35,37 +35,27 @@ public class JdbcTagRepository implements TagRepository {
         return tag;
     }
 
-    private final RowMapper<Tag> tagRowMapper = (rs, rowNum) -> mapTag(rs);
+    private final RowMapper<Tag> tagRowMapper = (rs, _) -> mapTag(rs);
 
+    @Override
     public Optional<Tag> findByTag(String tagName) {
-        String sql = "SELECT * FROM tags WHERE tag = ?";
-        List<Tag> tags = jdbcTemplate.query(sql, tagRowMapper, tagName);
-        return tags.isEmpty() ? Optional.empty() : Optional.of(tags.get(0));
+        String sql = TagQuery.FIND_BY_VALUE.getSql();
+        Map<String, Object> params = Collections.singletonMap("tagValue", tagName);
+        List<Tag> tags = namedJdbcTemplate.query(sql, params, tagRowMapper);
+        return tags.stream().findFirst();
     }
 
+    @Override
     public Tag save(Tag tag) {
+        String sql = TagQuery.SAVE_TAG.getSql();
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> createPreparedStatement(connection, tag), keyHolder);
-        Number key = keyHolder.getKey();
-        if (key == null) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("tag", tag.getTag());
+        namedJdbcTemplate.update(sql, new MapSqlParameterSource(params), keyHolder, new String[]{"id"});
+        if (keyHolder.getKey() == null) {
             throw new IllegalStateException("Не удалось получить сгенерированный идентификатор");
         }
-        tag.setId(key.longValue());
+        tag.setId(keyHolder.getKey().longValue());
         return tag;
-    }
-
-    private PreparedStatement createPreparedStatement(java.sql.Connection connection, Tag tag) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement(INSERT_SQL, new String[] {"id"});
-        try {
-            ps.setString(1, tag.getTag());
-            return ps;
-        } catch (Exception e) {
-            try {
-                ps.close();
-            } catch (Exception closeEx) {
-                log.error("Ошибка с PreparedStatement: {}", closeEx.getMessage());
-            }
-            throw e;
-        }
     }
 }

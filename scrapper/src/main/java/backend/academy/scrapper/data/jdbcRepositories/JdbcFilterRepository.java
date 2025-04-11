@@ -2,16 +2,18 @@ package backend.academy.scrapper.data.jdbcRepositories;
 
 import backend.academy.scrapper.data.FilterRepository;
 import backend.academy.scrapper.model.entities.Filter;
-import java.sql.PreparedStatement;
+import backend.academy.scrapper.model.queries.FilterQuery;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -20,12 +22,10 @@ import org.springframework.stereotype.Repository;
 @ConditionalOnProperty(name = "access-type", havingValue = "SQL")
 public class JdbcFilterRepository implements FilterRepository {
 
-    private final JdbcTemplate jdbcTemplate;
-    private static final Logger log = LoggerFactory.getLogger(JdbcFilterRepository.class);
-    private static final String INSERT_SQL = "INSERT INTO filter (filter) VALUES (?) RETURNING id";
+    private final NamedParameterJdbcTemplate namedJdbcTemplate;
 
-    public JdbcFilterRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public JdbcFilterRepository(NamedParameterJdbcTemplate namedJdbcTemplate) {
+        this.namedJdbcTemplate = namedJdbcTemplate;
     }
 
     private Filter mapFilter(ResultSet rs) throws SQLException {
@@ -35,38 +35,27 @@ public class JdbcFilterRepository implements FilterRepository {
         return filter;
     }
 
-    private final RowMapper<Filter> filterRowMapper = (rs, rowNum) -> mapFilter(rs);
+    private final RowMapper<Filter> filterRowMapper = (rs, _) -> mapFilter(rs);
 
+    @Override
     public Optional<Filter> findByFilter(String filterValue) {
-        String sql = "SELECT * FROM filter WHERE filter = ?";
-        List<Filter> filters = jdbcTemplate.query(sql, filterRowMapper, filterValue);
-        return filters.isEmpty() ? Optional.empty() : Optional.of(filters.get(0));
+        String sql = FilterQuery.FIND_BY_VALUE.getSql();
+        Map<String, Object> params = Collections.singletonMap("filterValue", filterValue);
+        List<Filter> filters = namedJdbcTemplate.query(sql, params, filterRowMapper);
+        return filters.stream().findFirst();
     }
 
+    @Override
     public Filter save(Filter filter) {
+        String sql = FilterQuery.SAVE_FILTER.getSql();
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> createPreparedStatement(connection, filter), keyHolder);
-        Number key = keyHolder.getKey();
-        if (key == null) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("filter", filter.getFilter());
+        namedJdbcTemplate.update(sql, new MapSqlParameterSource(params), keyHolder, new String[]{"id"});
+        if (keyHolder.getKey() == null) {
             throw new IllegalStateException("Не удалось получить сгенерированный идентификатор");
         }
-        filter.setId(key.longValue());
+        filter.setId(keyHolder.getKey().longValue());
         return filter;
-    }
-
-    private PreparedStatement createPreparedStatement(java.sql.Connection connection, Filter filter)
-            throws SQLException {
-        PreparedStatement ps = connection.prepareStatement(INSERT_SQL, new String[] {"id"});
-        try {
-            ps.setString(1, filter.getFilter());
-            return ps;
-        } catch (Exception e) {
-            try {
-                ps.close();
-            } catch (Exception closeEx) {
-                log.error("Ошибка с PreparedStatement: {}", closeEx.getMessage());
-            }
-            throw e;
-        }
     }
 }
