@@ -14,7 +14,7 @@ public interface LinkService {
 
     List<Link> getLinksByUserId(Long userId);
 
-    boolean deleteLinkByUserIdAndLink(Long userId, String link);
+    void deleteLinkByUserIdAndLink(Long userId, String link);
 
     void saveTag(Tag tag);
 

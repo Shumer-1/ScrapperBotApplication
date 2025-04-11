@@ -28,63 +28,42 @@ public class TrackingController {
     }
 
     @Operation(
-            summary = "Добавление отслеживания",
-            description = "Принимает данные для отслеживания и сохраняет их в репозитории.")
-    @ApiResponses(
-            value = {
-                @ApiResponse(responseCode = "200", description = "Данные успешно сохранены"),
-                @ApiResponse(responseCode = "400", description = "Неверный формат данных"),
-                @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
-            })
+        summary = "Добавление отслеживания",
+        description = "Принимает данные для отслеживания и сохраняет их в репозитории.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Данные успешно сохранены"),
+        @ApiResponse(responseCode = "400", description = "Неверный формат данных"),
+        @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
+    })
     @PostMapping("/track")
     public Mono<Void> addTracking(@RequestBody TrackingRequest trackingRequest) {
-        log.info(
-                "Получены данные для отслеживания: действие=добавление, ссылка={}, id пользователя={}, теги={}, фильтры={}",
-                trackingRequest.getLink(),
-                trackingRequest.getUserId(),
-                trackingRequest.getTags(),
-                trackingRequest.getFilters());
-        linkService.addLink(
-                trackingRequest.getLink(),
-                trackingRequest.getUserId(),
-                new HashSet<>(trackingRequest.getTags()),
-                new HashSet<>(trackingRequest.getFilters()));
-        log.info(
-                "Данные успешно сохранены в репозитории: ссылка={}, id пользователя={}",
-                trackingRequest.getLink(),
-                trackingRequest.getUserId());
-        return Mono.empty();
+        log.info("Получены данные для отслеживания: действие=добавление, ссылка={}, id пользователя={}, теги={}, фильтры={}",
+            trackingRequest.link(), trackingRequest.userId(), trackingRequest.tags(), trackingRequest.filters());
+        return Mono.fromRunnable(() ->
+            linkService.addLink(
+                trackingRequest.link(),
+                trackingRequest.userId(),
+                new HashSet<>(trackingRequest.tags()),
+                new HashSet<>(trackingRequest.filters()))
+        );
     }
 
     @Operation(
-            summary = "Удаление отслеживания",
-            description = "Принимает данные для прекращения отслеживания и удаляет запись из репозитория.")
-    @ApiResponses(
-            value = {
-                @ApiResponse(responseCode = "200", description = "Запись успешно удалена или не найдена"),
-                @ApiResponse(responseCode = "400", description = "Неверный формат данных"),
-                @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
-            })
+        summary = "Удаление отслеживания",
+        description = "Принимает данные для прекращения отслеживания и удаляет запись из репозитория.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Запись успешно удалена"),
+        @ApiResponse(responseCode = "400", description = "Неверный формат данных"),
+        @ApiResponse(responseCode = "404", description = "Запись не найдена"),
+        @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
+    })
     @PostMapping("/untrack")
     public Mono<UntrackingResponse> removeTracking(@RequestBody UntrackingRequest untrackingRequest) {
-        log.info(
-                "Получен запрос на прекращение отслеживания: действие=удаление, ссылка={}, id пользователя={}",
-                untrackingRequest.getLink(),
-                untrackingRequest.getUserId());
-        boolean exists =
-                linkService.deleteLinkByUserIdAndLink(untrackingRequest.getUserId(), untrackingRequest.getLink());
-        if (exists) {
-            log.info(
-                    "Запись успешно удалена из репозитория: ссылка={}, id пользователя={}",
-                    untrackingRequest.getLink(),
-                    untrackingRequest.getUserId());
-            return Mono.just(new UntrackingResponse(true, "Запись успешно удалена"));
-        } else {
-            log.info(
-                    "Запись не найдена или не отслеживается: ссылка={}, id пользователя={}",
-                    untrackingRequest.getLink(),
-                    untrackingRequest.getUserId());
-            return Mono.just(new UntrackingResponse(false, "Запись не найдена или не отслеживается"));
-        }
+        log.info("Получен запрос на прекращение отслеживания: действие=удаление, ссылка={}, id пользователя={}",
+            untrackingRequest.link(), untrackingRequest.userId());
+        return Mono.fromCallable(() -> {
+            linkService.deleteLinkByUserIdAndLink(untrackingRequest.userId(), untrackingRequest.link());
+            return new UntrackingResponse(true, "Запись успешно удалена");
+        });
     }
 }
