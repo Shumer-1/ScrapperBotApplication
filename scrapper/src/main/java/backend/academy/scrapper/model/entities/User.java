@@ -8,6 +8,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,13 +21,16 @@ public class User {
     private Long id;
 
     @Column(name = "tg_id", nullable = false, unique = true)
+    @NotNull
     private Long telegramId;
 
-    @Column(name = "username", nullable = false, unique = true)
+    @Column(name = "username", nullable = false)
+    @NotNull
     private String username;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    private List<Link> trackingLinks;
+    @NotNull
+    private List<Link> trackingLinks = new ArrayList<>();
 
     public User() {}
 

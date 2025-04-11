@@ -7,6 +7,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -18,10 +20,12 @@ public class Filter {
     private Long id;
 
     @Column(name = "filter", nullable = false)
+    @NotNull
     private String filter;
 
     @ManyToMany(mappedBy = "filters")
-    private Set<Link> trackingLinks;
+    @NotNull
+    private Set<Link> trackingLinks = new HashSet<>();;
 
     public Filter() {}
 

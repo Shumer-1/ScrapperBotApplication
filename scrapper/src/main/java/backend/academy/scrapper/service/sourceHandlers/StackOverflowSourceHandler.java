@@ -49,26 +49,26 @@ public class StackOverflowSourceHandler implements SourceHandler {
                 .flatMap(tuple -> {
                     StackOverflowUpdate answer = tuple.getT1();
                     StackOverflowUpdate comment = tuple.getT2();
-                    return Mono.just(answer.getCreationTime().isAfter(comment.getCreationTime()) ? answer : comment);
+                    return Mono.just(answer.creationTime().isAfter(comment.creationTime()) ? answer : comment);
                 })
                 .filter(Objects::nonNull)
                 .doOnNext(update -> {
                     Instant previousUpdate = link.getLastUpdated();
-                    if (previousUpdate == null || update.getCreationTime().isAfter(previousUpdate)) {
+                    if (previousUpdate == null || update.creationTime().isAfter(previousUpdate)) {
                         log.info(
                                 "Новое обновление по StackOverflow: Тема '{}', Автор {}, Создан: {}. Превью: {}",
-                                update.getQuestionTitle(),
-                                update.getAuthor(),
-                                update.getCreationTime(),
-                                update.getBodyPreview());
+                                update.questionTitle(),
+                                update.author(),
+                                update.creationTime(),
+                                update.bodyPreview());
                         String message = String.format(
                                 "Новое обновление по вопросу:%nТема: %s%nАвтор: %s%nСоздан: %s%nПревью: %s",
-                                update.getQuestionTitle(),
-                                update.getAuthor(),
-                                update.getCreationTime(),
-                                update.getBodyPreview());
+                                update.questionTitle(),
+                                update.author(),
+                                update.creationTime(),
+                                update.bodyPreview());
                         notificationService.sendNotification(message, userId);
-                        linkService.refreshLastUpdated(linkName, userId, update.getCreationTime());
+                        linkService.refreshLastUpdated(linkName, userId, update.creationTime());
                     }
                 })
                 .doOnError(error -> {

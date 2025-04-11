@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,10 +20,12 @@ public class Tag {
     private Long id;
 
     @Column(name = "tag", nullable = false)
+    @NotNull
     private String tag;
 
     @ManyToMany(mappedBy = "tags")
-    private Set<Link> trackingLinks;
+    @NotNull
+    private Set<Link> trackingLinks= new HashSet<>();;
 
     public Tag() {}
 

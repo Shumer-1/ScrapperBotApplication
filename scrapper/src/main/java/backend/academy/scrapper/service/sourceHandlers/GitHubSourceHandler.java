@@ -40,24 +40,24 @@ public class GitHubSourceHandler implements SourceHandler {
                 .getLatestIssueOrPR(linkName)
                 .timeout(Duration.ofSeconds(5))
                 .doOnNext(issue -> {
-                    if (link.getLastUpdated() == null || issue.getCreatedAt().isAfter(link.getLastUpdated())) {
+                    if (link.getLastUpdated() == null || issue.createdAt().isAfter(link.getLastUpdated())) {
                         log.info(
-                                "Старое значение {}, новое значение: {} ", link.getLastUpdated(), issue.getCreatedAt());
+                                "Старое значение {}, новое значение: {} ", link.getLastUpdated(), issue.createdAt());
                         log.info(
                                 "Новый PR/Issue обновлен: '{}' от пользователя {} в {}. Превью: {}",
-                                issue.getTitle(),
-                                issue.getUsername(),
-                                issue.getCreatedAt(),
-                                issue.getBodyPreview());
+                                issue.title(),
+                                issue.username(),
+                                issue.createdAt(),
+                                issue.bodyPreview());
                         String message = String.format(
                                 "Новый PR/Issue:%nНазвание: %s%nАвтор: %s%nСоздан: %s%nОписание: %s",
-                                issue.getTitle(), issue.getUsername(), issue.getCreatedAt(), issue.getBodyPreview());
+                                issue.title(), issue.username(), issue.createdAt(), issue.bodyPreview());
                         notificationService.sendNotification(message, userId);
-                        linkService.refreshLastUpdated(linkName, userId, issue.getCreatedAt());
+                        linkService.refreshLastUpdated(linkName, userId, issue.createdAt());
                     }
                 })
                 .doOnError(error -> {
-                    System.err.printf("Ошибка при запросе к GitHub API для %s: %s%n", linkName, error.getMessage());
+                    log.error("Ошибка при запросе к GitHub API для {}: {}%n", linkName, error.getMessage());
                 })
                 .then();
     }
