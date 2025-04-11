@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import backend.academy.scrapper.data.jdbcRepositories.JdbcUserRepository;
+import backend.academy.scrapper.exceptions.UserAlreadyExistsException;
 import backend.academy.scrapper.model.entities.User;
 import backend.academy.scrapper.service.userService.UserService;
 import org.junit.jupiter.api.Test;
@@ -40,9 +41,9 @@ public class JdbcUserServiceTest {
 
     @Test
     public void testSaveNewUser() {
-        long telegramId = 654321L;
+        long telegramId = 654322L;
         String username = "jdbcuser";
-        boolean saved = userService.save(telegramId, username);
+        userService.save(telegramId, username);
 
         User user = userService.getUserByTelegramId(telegramId);
         System.out.println(user.getTelegramId());
@@ -54,18 +55,16 @@ public class JdbcUserServiceTest {
     public void testSaveExistingUser() {
         long telegramId = 654321L;
         String username = "jdbcuser";
-        boolean saved = userService.save(telegramId, username);
-        assertThat(saved).isTrue();
-
-        boolean savedAgain = userService.save(telegramId, username);
-        assertThat(savedAgain).isFalse();
+        userService.save(telegramId, username);
+        assertThrows(UserAlreadyExistsException.class, () -> userService.save(telegramId, username));
     }
 
     @Test
     public void testUserNotFound() {
         long telegramId = 888888L;
-        Exception exception =
-                assertThrows(IllegalArgumentException.class, () -> userService.getUserByTelegramId(telegramId));
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+            userService.getUserByTelegramId(telegramId)
+        );
         assertThat(exception.getMessage()).contains("Пользователь не найден");
     }
 }

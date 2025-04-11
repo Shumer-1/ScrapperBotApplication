@@ -1,6 +1,7 @@
 package backend.academy.scrapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 import backend.academy.scrapper.data.jdbcRepositories.JdbcFilterRepository;
 import backend.academy.scrapper.data.jdbcRepositories.JdbcLinkRepository;
@@ -97,8 +98,8 @@ public class JdbcLinkServiceTest {
         String linkUrl = "http://example.com/deleteJdbc";
         linkService.addLink(linkUrl, userId, Set.of("tagDel"), Set.of("filterDel"));
 
-        boolean deleted = linkService.deleteLinkByUserIdAndLink(userId, linkUrl);
-        assertThat(deleted).isTrue();
+        assertThatCode(() -> linkService.deleteLinkByUserIdAndLink(userId, linkUrl))
+            .doesNotThrowAnyException();
 
         Link link = linkRepository.findByUserIdAndLink(userId, linkUrl);
         assertThat(link).isNull();

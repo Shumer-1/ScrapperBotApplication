@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import backend.academy.scrapper.data.ormRepositories.OrmUserRepository;
+import backend.academy.scrapper.exceptions.UserAlreadyExistsException;
 import backend.academy.scrapper.model.entities.User;
 import backend.academy.scrapper.service.userService.UserService;
 import org.junit.jupiter.api.AfterEach;
@@ -22,9 +23,9 @@ public class OrmUserServiceTest {
 
     @Container
     public static PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:14")
-            .withDatabaseName("test_db")
-            .withUsername("admin")
-            .withPassword("12345");
+        .withDatabaseName("test_db")
+        .withUsername("admin")
+        .withPassword("12345");
 
     @DynamicPropertySource
     static void overrideProperties(DynamicPropertyRegistry registry) {
@@ -49,8 +50,7 @@ public class OrmUserServiceTest {
     public void testSaveNewUser() {
         long telegramId = 123456L;
         String username = "testuser";
-        boolean saved = userService.save(telegramId, username);
-        assertThat(saved).isTrue();
+        userService.save(telegramId, username);
 
         User user = userService.getUserByTelegramId(telegramId);
         assertThat(user).isNotNull();
@@ -61,18 +61,15 @@ public class OrmUserServiceTest {
     public void testSaveExistingUser() {
         long telegramId = 123456L;
         String username = "testuser";
-        boolean saved = userService.save(telegramId, username);
-        assertThat(saved).isTrue();
-
-        boolean savedAgain = userService.save(telegramId, username);
-        assertThat(savedAgain).isFalse();
+        userService.save(telegramId, username);
+        assertThrows(UserAlreadyExistsException.class, () -> userService.save(telegramId, username));
     }
 
     @Test
     public void testUserNotFound() {
         long telegramId = 999999L;
         Exception exception =
-                assertThrows(IllegalArgumentException.class, () -> userService.getUserByTelegramId(telegramId));
+            assertThrows(IllegalArgumentException.class, () -> userService.getUserByTelegramId(telegramId));
         assertThat(exception.getMessage()).contains("Пользователь не найден");
     }
 }

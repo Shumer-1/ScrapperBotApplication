@@ -1,11 +1,14 @@
 package backend.academy.scrapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import backend.academy.scrapper.data.ormRepositories.OrmFilterRepository;
 import backend.academy.scrapper.data.ormRepositories.OrmLinkRepository;
 import backend.academy.scrapper.data.ormRepositories.OrmTagRepository;
 import backend.academy.scrapper.data.ormRepositories.OrmUserRepository;
+import backend.academy.scrapper.exceptions.ResourceNotFoundException;
 import backend.academy.scrapper.model.entities.Filter;
 import backend.academy.scrapper.model.entities.Link;
 import backend.academy.scrapper.model.entities.Tag;
@@ -111,11 +114,12 @@ public class OrmLinkServiceTest {
         String linkUrl = "http://example.com/delete";
         linkService.addLink(linkUrl, userId, Set.of("tagX"), Set.of("filterX"));
 
-        boolean deleted = linkService.deleteLinkByUserIdAndLink(userId, linkUrl);
-        assertThat(deleted).isTrue();
+        assertThatCode(() -> linkService.deleteLinkByUserIdAndLink(userId, linkUrl))
+            .doesNotThrowAnyException();
 
-        boolean deletedAgain = linkService.deleteLinkByUserIdAndLink(userId, linkUrl);
-        assertThat(deletedAgain).isFalse();
+        assertThatThrownBy(() -> linkService.deleteLinkByUserIdAndLink(userId, linkUrl))
+            .isInstanceOf(ResourceNotFoundException.class)
+            .hasMessageContaining("не существует");
     }
 
     @Test
