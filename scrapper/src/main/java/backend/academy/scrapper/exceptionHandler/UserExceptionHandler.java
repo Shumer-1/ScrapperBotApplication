@@ -11,7 +11,6 @@ public class UserExceptionHandler {
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<GlobalExceptionHandler.ErrorResponse> handleUserAlreadyExists(UserAlreadyExistsException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
-            .body(new GlobalExceptionHandler.ErrorResponse("Пользователь уже существует", ex.getMessage()));
+                .body(new GlobalExceptionHandler.ErrorResponse("Пользователь уже существует", ex.getMessage()));
     }
 }
-

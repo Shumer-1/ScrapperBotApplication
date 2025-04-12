@@ -25,7 +25,9 @@ public class Tag {
 
     @ManyToMany(mappedBy = "tags")
     @NotNull
-    private Set<Link> trackingLinks= new HashSet<>();;
+    private Set<Link> trackingLinks = new HashSet<>();
+
+    ;
 
     public Tag() {}
 

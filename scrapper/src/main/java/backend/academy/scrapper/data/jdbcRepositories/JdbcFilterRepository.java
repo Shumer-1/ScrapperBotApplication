@@ -35,7 +35,7 @@ public class JdbcFilterRepository implements FilterRepository {
         return filter;
     }
 
-    private final RowMapper<Filter> filterRowMapper = (rs, _) -> mapFilter(rs);
+    private final RowMapper<Filter> filterRowMapper = (rs, temp) -> mapFilter(rs);
 
     @Override
     public Optional<Filter> findByFilter(String filterValue) {
@@ -51,11 +51,12 @@ public class JdbcFilterRepository implements FilterRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         Map<String, Object> params = new HashMap<>();
         params.put("filter", filter.getFilter());
-        namedJdbcTemplate.update(sql, new MapSqlParameterSource(params), keyHolder, new String[]{"id"});
-        if (keyHolder.getKey() == null) {
+        namedJdbcTemplate.update(sql, new MapSqlParameterSource(params), keyHolder, new String[] {"id"});
+        Number generatedKey = keyHolder.getKey();
+        if (generatedKey == null) {
             throw new IllegalStateException("Не удалось получить сгенерированный идентификатор");
         }
-        filter.setId(keyHolder.getKey().longValue());
+        filter.setId(generatedKey.longValue());
         return filter;
     }
 }

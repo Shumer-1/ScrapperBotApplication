@@ -25,7 +25,9 @@ public class Filter {
 
     @ManyToMany(mappedBy = "filters")
     @NotNull
-    private Set<Link> trackingLinks = new HashSet<>();;
+    private Set<Link> trackingLinks = new HashSet<>();
+
+    ;
 
     public Filter() {}
 

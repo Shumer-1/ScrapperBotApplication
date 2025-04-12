@@ -26,4 +26,3 @@ public enum TagQuery {
         return sql;
     }
 }
-

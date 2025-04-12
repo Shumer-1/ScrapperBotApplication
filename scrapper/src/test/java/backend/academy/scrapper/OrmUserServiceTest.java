@@ -23,9 +23,9 @@ public class OrmUserServiceTest {
 
     @Container
     public static PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:14")
-        .withDatabaseName("test_db")
-        .withUsername("admin")
-        .withPassword("12345");
+            .withDatabaseName("test_db")
+            .withUsername("admin")
+            .withPassword("12345");
 
     @DynamicPropertySource
     static void overrideProperties(DynamicPropertyRegistry registry) {
@@ -69,7 +69,7 @@ public class OrmUserServiceTest {
     public void testUserNotFound() {
         long telegramId = 999999L;
         Exception exception =
-            assertThrows(IllegalArgumentException.class, () -> userService.getUserByTelegramId(telegramId));
+                assertThrows(IllegalArgumentException.class, () -> userService.getUserByTelegramId(telegramId));
         assertThat(exception.getMessage()).contains("Пользователь не найден");
     }
 }

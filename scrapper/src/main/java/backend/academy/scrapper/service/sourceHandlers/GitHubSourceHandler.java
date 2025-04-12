@@ -41,8 +41,7 @@ public class GitHubSourceHandler implements SourceHandler {
                 .timeout(Duration.ofSeconds(5))
                 .doOnNext(issue -> {
                     if (link.getLastUpdated() == null || issue.createdAt().isAfter(link.getLastUpdated())) {
-                        log.info(
-                                "Старое значение {}, новое значение: {} ", link.getLastUpdated(), issue.createdAt());
+                        log.info("Старое значение {}, новое значение: {} ", link.getLastUpdated(), issue.createdAt());
                         log.info(
                                 "Новый PR/Issue обновлен: '{}' от пользователя {} в {}. Превью: {}",
                                 issue.title(),

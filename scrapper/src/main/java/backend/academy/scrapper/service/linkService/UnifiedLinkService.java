@@ -5,7 +5,6 @@ import backend.academy.scrapper.data.LinkRepository;
 import backend.academy.scrapper.data.TagRepository;
 import backend.academy.scrapper.data.UserRepository;
 import backend.academy.scrapper.exceptions.ResourceNotFoundException;
-import backend.academy.scrapper.exceptions.UserAlreadyExistsException;
 import backend.academy.scrapper.model.entities.Filter;
 import backend.academy.scrapper.model.entities.Link;
 import backend.academy.scrapper.model.entities.Tag;
@@ -84,7 +83,8 @@ public class UnifiedLinkService implements LinkService {
             linkRepository.delete(link);
             return;
         }
-        throw new ResourceNotFoundException("Ссылки с telegramId " + userId + " и значением " + linkUrl + " не существует");
+        throw new ResourceNotFoundException(
+                "Ссылки с telegramId " + userId + " и значением " + linkUrl + " не существует");
     }
 
     @Override

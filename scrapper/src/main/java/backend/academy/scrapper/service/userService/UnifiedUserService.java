@@ -30,7 +30,6 @@ public class UnifiedUserService implements UserService {
         userRepository.saveUser(user);
     }
 
-
     @Override
     @Transactional(readOnly = true)
     public boolean existsByTelegramId(long telegramId) {

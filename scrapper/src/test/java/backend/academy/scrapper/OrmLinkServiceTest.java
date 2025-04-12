@@ -115,11 +115,11 @@ public class OrmLinkServiceTest {
         linkService.addLink(linkUrl, userId, Set.of("tagX"), Set.of("filterX"));
 
         assertThatCode(() -> linkService.deleteLinkByUserIdAndLink(userId, linkUrl))
-            .doesNotThrowAnyException();
+                .doesNotThrowAnyException();
 
         assertThatThrownBy(() -> linkService.deleteLinkByUserIdAndLink(userId, linkUrl))
-            .isInstanceOf(ResourceNotFoundException.class)
-            .hasMessageContaining("не существует");
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("не существует");
     }
 
     @Test

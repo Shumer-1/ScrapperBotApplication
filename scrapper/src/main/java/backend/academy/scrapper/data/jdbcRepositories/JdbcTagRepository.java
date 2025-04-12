@@ -35,7 +35,7 @@ public class JdbcTagRepository implements TagRepository {
         return tag;
     }
 
-    private final RowMapper<Tag> tagRowMapper = (rs, _) -> mapTag(rs);
+    private final RowMapper<Tag> tagRowMapper = (rs, temp) -> mapTag(rs);
 
     @Override
     public Optional<Tag> findByTag(String tagName) {
@@ -51,11 +51,12 @@ public class JdbcTagRepository implements TagRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         Map<String, Object> params = new HashMap<>();
         params.put("tag", tag.getTag());
-        namedJdbcTemplate.update(sql, new MapSqlParameterSource(params), keyHolder, new String[]{"id"});
-        if (keyHolder.getKey() == null) {
+        namedJdbcTemplate.update(sql, new MapSqlParameterSource(params), keyHolder, new String[] {"id"});
+        Number generatedKey = keyHolder.getKey();
+        if (generatedKey == null) {
             throw new IllegalStateException("Не удалось получить сгенерированный идентификатор");
         }
-        tag.setId(keyHolder.getKey().longValue());
+        tag.setId(generatedKey.longValue());
         return tag;
     }
 }

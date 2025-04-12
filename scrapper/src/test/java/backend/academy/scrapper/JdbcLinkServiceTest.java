@@ -99,7 +99,7 @@ public class JdbcLinkServiceTest {
         linkService.addLink(linkUrl, userId, Set.of("tagDel"), Set.of("filterDel"));
 
         assertThatCode(() -> linkService.deleteLinkByUserIdAndLink(userId, linkUrl))
-            .doesNotThrowAnyException();
+                .doesNotThrowAnyException();
 
         Link link = linkRepository.findByUserIdAndLink(userId, linkUrl);
         assertThat(link).isNull();

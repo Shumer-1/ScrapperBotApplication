@@ -18,4 +18,3 @@ public class DataAccessException extends RuntimeException {
         super(cause);
     }
 }
-

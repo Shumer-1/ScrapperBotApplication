@@ -63,10 +63,7 @@ public class StackOverflowSourceHandler implements SourceHandler {
                                 update.bodyPreview());
                         String message = String.format(
                                 "Новое обновление по вопросу:%nТема: %s%nАвтор: %s%nСоздан: %s%nПревью: %s",
-                                update.questionTitle(),
-                                update.author(),
-                                update.creationTime(),
-                                update.bodyPreview());
+                                update.questionTitle(), update.author(), update.creationTime(), update.bodyPreview());
                         notificationService.sendNotification(message, userId);
                         linkService.refreshLastUpdated(linkName, userId, update.creationTime());
                     }

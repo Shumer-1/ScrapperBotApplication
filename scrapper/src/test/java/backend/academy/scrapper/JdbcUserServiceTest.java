@@ -62,9 +62,8 @@ public class JdbcUserServiceTest {
     @Test
     public void testUserNotFound() {
         long telegramId = 888888L;
-        Exception exception = assertThrows(IllegalArgumentException.class, () ->
-            userService.getUserByTelegramId(telegramId)
-        );
+        Exception exception =
+                assertThrows(IllegalArgumentException.class, () -> userService.getUserByTelegramId(telegramId));
         assertThat(exception.getMessage()).contains("Пользователь не найден");
     }
 }

@@ -60,7 +60,6 @@ public class JdbcLinkRepository implements LinkRepository {
         return user;
     }
 
-
     private Link mapLink(ResultSet rs) throws SQLException {
         Link link = new Link();
         link.setId(rs.getLong("tracking_link_id"));
@@ -87,7 +86,7 @@ public class JdbcLinkRepository implements LinkRepository {
     public List<Link> findByUserTelegramId(long telegramId) {
         String sql = LinkQuery.FIND_BY_TELEGRAM_ID.getSql();
         Map<String, Object> params = Collections.singletonMap("telegramId", telegramId);
-        List<Link> links = namedJdbcTemplate.query(sql, params, (rs, _) -> {
+        List<Link> links = namedJdbcTemplate.query(sql, params, (rs, temp) -> {
             Link link = mapLink(rs);
             link.setTags(new HashSet<>(getTagsForLink(link.getId())));
             link.setFilters(new HashSet<>(getFiltersForLink(link.getId())));
@@ -102,7 +101,7 @@ public class JdbcLinkRepository implements LinkRepository {
         Map<String, Object> params = new HashMap<>();
         params.put("telegramId", telegramId);
         params.put("linkUrl", linkUrl);
-        List<Link> links = namedJdbcTemplate.query(sql, params, (rs, _) -> {
+        List<Link> links = namedJdbcTemplate.query(sql, params, (rs, temp) -> {
             Link link = mapLink(rs);
             link.setTags(new HashSet<>(getTagsForLink(link.getId())));
             link.setFilters(new HashSet<>(getFiltersForLink(link.getId())));
@@ -118,15 +117,12 @@ public class JdbcLinkRepository implements LinkRepository {
         params.put("link", link.getLink());
         params.put("userId", link.getUser().getId());
         namedJdbcTemplate.update(
-            LinkQuery.SAVE_LINK.getSql(),
-            new MapSqlParameterSource(params),
-            keyHolder,
-            new String[]{"id"}
-        );
-        if (keyHolder.getKey() == null) {
+                LinkQuery.SAVE_LINK.getSql(), new MapSqlParameterSource(params), keyHolder, new String[] {"id"});
+        Number generatedKey = keyHolder.getKey();
+        if (generatedKey == null) {
             throw new IllegalStateException("Не удалось получить сгенерированный идентификатор");
         }
-        link.setId(keyHolder.getKey().longValue());
+        link.setId(generatedKey.longValue());
         saveAssociationTag(link);
         saveAssociationFilter(link);
         return link;
@@ -144,7 +140,7 @@ public class JdbcLinkRepository implements LinkRepository {
         }
     }
 
-    private void saveAssociationFilter(Link link){
+    private void saveAssociationFilter(Link link) {
         if (link.getFilters() != null && !link.getFilters().isEmpty()) {
             String sqlFilter = LinkQuery.SAVE_LINK_AND_FILTER.getSql();
             link.getFilters().forEach(filter -> {

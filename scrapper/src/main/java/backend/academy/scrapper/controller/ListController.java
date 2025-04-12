@@ -26,13 +26,14 @@ public class ListController {
     }
 
     @Operation(
-        summary = "Получение списка ссылок",
-        description = "Возвращает список ссылок, отслеживаемых пользователем по его идентификатору (userId).")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Ссылки успешно получены"),
-        @ApiResponse(responseCode = "400", description = "Неверный формат запроса"),
-        @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
-    })
+            summary = "Получение списка ссылок",
+            description = "Возвращает список ссылок, отслеживаемых пользователем по его идентификатору (userId).")
+    @ApiResponses(
+            value = {
+                @ApiResponse(responseCode = "200", description = "Ссылки успешно получены"),
+                @ApiResponse(responseCode = "400", description = "Неверный формат запроса"),
+                @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
+            })
     @GetMapping("/links")
     public Flux<Link> getLinks(@RequestParam("userId") long userId) {
         log.info("Получение списка ссылок для пользователя: {}", userId);

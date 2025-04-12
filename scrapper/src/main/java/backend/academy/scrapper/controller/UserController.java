@@ -27,20 +27,22 @@ public class UserController {
     }
 
     @Operation(
-        summary = "Регистрация пользователя",
-        description = "Принимает данные для регистрации пользователя и регистрирует его, если он еще не существует.")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Пользователь успешно зарегистрирован"),
-        @ApiResponse(responseCode = "400", description = "Неверный формат запроса"),
-        @ApiResponse(responseCode = "409", description = "Пользователь уже существует"),
-        @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
-    })
+            summary = "Регистрация пользователя",
+            description =
+                    "Принимает данные для регистрации пользователя и регистрирует его, если он еще не существует.")
+    @ApiResponses(
+            value = {
+                @ApiResponse(responseCode = "200", description = "Пользователь успешно зарегистрирован"),
+                @ApiResponse(responseCode = "400", description = "Неверный формат запроса"),
+                @ApiResponse(responseCode = "409", description = "Пользователь уже существует"),
+                @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
+            })
     @PostMapping("/user")
     public Mono<ResponseEntity<UserRegistrationResponse>> registerUser(@RequestBody UserRegistrationRequest request) {
-        log.info("Получен запрос на регистрацию пользователя: id={}, username={}",
-            request.userId(), request.username());
+        log.info(
+                "Получен запрос на регистрацию пользователя: id={}, username={}", request.userId(), request.username());
         return Mono.fromRunnable(() -> userService.save(request.userId(), request.username()))
-            .then(Mono.just(ResponseEntity.ok(new UserRegistrationResponse(true, "Пользователь зарегистрирован успешно"))));
-
+                .then(Mono.just(
+                        ResponseEntity.ok(new UserRegistrationResponse(true, "Пользователь зарегистрирован успешно"))));
     }
 }

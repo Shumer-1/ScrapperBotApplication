@@ -56,11 +56,12 @@ public class JdbcUserRepository implements UserRepository {
         Map<String, Object> params = new HashMap<>();
         params.put("telegramId", user.getTelegramId());
         params.put("username", user.getUsername());
-        namedJdbcTemplate.update(sql, new MapSqlParameterSource(params), keyHolder, new String[]{"id"});
-        if (keyHolder.getKey() == null) {
+        namedJdbcTemplate.update(sql, new MapSqlParameterSource(params), keyHolder, new String[] {"id"});
+        Number generatedKey = keyHolder.getKey();
+        if (generatedKey == null) {
             throw new IllegalStateException("Не удалось получить сгенерированный идентификатор");
         }
-        user.setId(keyHolder.getKey().longValue());
+        user.setId(generatedKey.longValue());
         return user;
     }
 }

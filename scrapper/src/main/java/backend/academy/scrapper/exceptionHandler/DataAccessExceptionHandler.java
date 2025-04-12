@@ -11,7 +11,6 @@ public class DataAccessExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<GlobalExceptionHandler.ErrorResponse> handleResourceNotFound(ResourceNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(new GlobalExceptionHandler.ErrorResponse("Запись не найдена", ex.getMessage()));
+                .body(new GlobalExceptionHandler.ErrorResponse("Запись не найдена", ex.getMessage()));
     }
 }
-

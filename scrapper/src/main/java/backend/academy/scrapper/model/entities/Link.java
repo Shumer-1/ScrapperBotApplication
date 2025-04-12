@@ -39,7 +39,9 @@ public class Link {
             name = "link_and_tags",
             joinColumns = @JoinColumn(name = "link_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
-    private Set<Tag> tags = new HashSet<>();;
+    private Set<Tag> tags = new HashSet<>();
+
+    ;
 
     @ManyToMany
     @NotNull
@@ -47,7 +49,9 @@ public class Link {
             name = "link_and_filters",
             joinColumns = @JoinColumn(name = "link_id"),
             inverseJoinColumns = @JoinColumn(name = "filter_id"))
-    private Set<Filter> filters = new HashSet<>();;
+    private Set<Filter> filters = new HashSet<>();
+
+    ;
 
     @Column(name = "last_updated")
     @Nullable
