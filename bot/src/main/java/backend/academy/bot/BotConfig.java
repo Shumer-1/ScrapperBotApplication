@@ -12,7 +12,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Validated
-@ConfigurationProperties(prefix = "app", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "app", ignoreUnknownFields = true)
 @EnableAsync
 public record BotConfig(@NotEmpty String telegramToken) implements AsyncConfigurer {
     @Bean
