@@ -27,18 +27,18 @@ public class StartCommandHandler implements CommandHandler {
             long telegramId = Long.parseLong(update.message().from().id().toString());
             String username = update.message().from().username();
             scrapperClient
-                    .registerUser(telegramId, username)
-                    .subscribe(
-                            response -> {
-                                if (response.isExists()) {
-                                    sendMessage(update, "Пользователь уже зарегистрирован");
-                                } else {
-                                    sendMessage(update, "Пользователь зарегистрирован");
-                                }
-                            },
-                            error -> {
-                                sendMessage(update, "Ошибка при регистрации: " + error.getMessage());
-                            });
+                .registerUser(telegramId, username)
+                .subscribe(
+                    response -> {
+                        sendMessage(update, "Пользователь зарегистрирован");
+                    },
+                    error -> {
+                        if (error.getMessage().contains("уже существует")) {
+                            sendMessage(update, "Пользователь уже зарегистрирован");
+                        } else {
+                            sendMessage(update, "Ошибка при регистрации: " + error.getMessage());
+                        }
+                    });
         }
     }
 
