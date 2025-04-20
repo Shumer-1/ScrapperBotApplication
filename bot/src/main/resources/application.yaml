@@ -1,7 +1,26 @@
 app:
+  topics:
+    input: scrapperTopic
+    dead-letter: deadLetterTopic
   telegram-token: ${TELEGRAM_TOKEN} # env variable
 
 spring:
+  redis:
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: bot-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "backend.academy.bot.model.dto"
+        spring.json.value.default.type: backend.academy.bot.model.dto.NotificationRequest
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
   application:
     name: Bot
   liquibase:
