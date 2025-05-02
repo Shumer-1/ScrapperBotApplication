@@ -10,9 +10,10 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.listener.ContainerProperties.AckMode;
 import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
 import org.springframework.kafka.listener.DefaultErrorHandler;
-import org.springframework.util.backoff.FixedBackOff;
+import org.springframework.kafka.support.ExponentialBackOffWithMaxRetries;
 
 @Configuration
 public class KafkaConfig {
@@ -48,12 +49,28 @@ public class KafkaConfig {
     @Bean
     public ConcurrentKafkaListenerContainerFactory<Object, Object> kafkaListenerContainerFactory(
         ConsumerFactory<Object, Object> cf,
-        DeadLetterPublishingRecoverer recoverer) {
+        DeadLetterPublishingRecoverer recoverer,
+        @Value("${app.listener.concurrency}") int concurrency) {
 
         var factory = new ConcurrentKafkaListenerContainerFactory<Object, Object>();
         factory.setConsumerFactory(cf);
-        // 0 retries, сразу в DLQ
-        factory.setCommonErrorHandler(new DefaultErrorHandler(recoverer, new FixedBackOff(0L, 0L)));
+        factory.setConcurrency(concurrency);
+        factory.setBatchListener(true);
+
+        var props = factory.getContainerProperties();
+        props.setAckMode(AckMode.MANUAL_IMMEDIATE);
+        props.setPollTimeout(1_000);
+        props.setIdleBetweenPolls(500);
+        props.setObservationEnabled(true);
+
+        var backOff = new ExponentialBackOffWithMaxRetries(5);
+        backOff.setInitialInterval(500);
+        backOff.setMultiplier(2);
+        backOff.setMaxInterval(10_000);
+
+        var eh = new DefaultErrorHandler(recoverer, backOff);
+        eh.addNotRetryableExceptions(IllegalArgumentException.class);
+        factory.setCommonErrorHandler(eh);
         return factory;
     }
 }

@@ -1,8 +1,10 @@
 app:
+  telegram-token: "123456:ABCDEF"
   topics:
     input: scrapperTopic
     dead-letter: deadLetterTopic
-  telegram-token: ${TELEGRAM_TOKEN} # env variable
+  listener:
+    concurrency: 1
 
 spring:
   redis:
@@ -10,7 +12,14 @@ spring:
     port: ${REDIS_PORT:6379}
   kafka:
     bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    listener:
+      ack-mode: manual
+      poll-timeout: 1s
+      concurrency: 1
     consumer:
+      enable-auto-commit: false
+      max-poll-records: 500
+      isolation-level: read_committed
       group-id: bot-group
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer

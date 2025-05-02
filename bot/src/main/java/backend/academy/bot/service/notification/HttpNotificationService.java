@@ -1,4 +1,4 @@
-package backend.academy.bot.services;
+package backend.academy.bot.service.notification;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-public class HttpNotificationService {
+public class HttpNotificationService implements NotificationService{
     private final TelegramBot telegramBot;
     private static final Logger log = LoggerFactory.getLogger(HttpNotificationService.class);
 

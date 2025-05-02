@@ -11,7 +11,9 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
-@ConditionalOnProperty(name = "app.message-transport", havingValue = "Kafka")
+@ConditionalOnProperty(name = "app.message-transport",
+    havingValue = "kafka",
+    matchIfMissing = true)
 public class KafkaProducerNotificationService implements NotificationService {
 
     private static final Logger log = LoggerFactory.getLogger(KafkaProducerNotificationService.class);
