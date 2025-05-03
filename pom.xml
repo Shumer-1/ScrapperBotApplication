@@ -69,6 +69,12 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>org.apache.avro</groupId>
+                <artifactId>avro</artifactId>
+                <version>1.11.3</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.jspecify</groupId>
                 <artifactId>jspecify</artifactId>
                 <version>${jspecify.version}</version>
@@ -171,6 +177,23 @@
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.apache.avro</groupId>
+                    <artifactId>avro-maven-plugin</artifactId>
+                    <version>1.11.3</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>schema</goal>
+                            </goals>
+                            <phase>generate-sources</phase>
+                            <configuration>
+                                <sourceDirectory>${project.basedir}/src/main/avro</sourceDirectory>
+                                <stringType>String</stringType>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>

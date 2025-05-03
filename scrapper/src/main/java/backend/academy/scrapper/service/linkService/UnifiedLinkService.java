@@ -4,7 +4,7 @@ import backend.academy.scrapper.data.FilterRepository;
 import backend.academy.scrapper.data.LinkRepository;
 import backend.academy.scrapper.data.TagRepository;
 import backend.academy.scrapper.data.UserRepository;
-import backend.academy.scrapper.exceptions.ResourceNotFoundException;
+import backend.academy.scrapper.exception.ResourceNotFoundException;
 import backend.academy.scrapper.model.entities.Filter;
 import backend.academy.scrapper.model.entities.Link;
 import backend.academy.scrapper.model.entities.Tag;

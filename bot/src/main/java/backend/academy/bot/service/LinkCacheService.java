@@ -1,7 +1,7 @@
-package backend.academy.bot.services;
+package backend.academy.bot.service;
 
 import backend.academy.bot.client.ScrapperClient;
-import backend.academy.bot.model.entities.Link;
+import backend.academy.bot.model.entity.Link;
 import java.time.Duration;
 import java.util.List;
 import org.springframework.data.redis.core.ReactiveRedisOperations;
@@ -17,8 +17,7 @@ public class LinkCacheService {
     private final ReactiveRedisOperations<String, Link> redisOps;
     private final ScrapperClient scrapperClient;
 
-    public LinkCacheService(ReactiveRedisOperations<String, Link> redisOps,
-                            ScrapperClient scrapperClient) {
+    public LinkCacheService(ReactiveRedisOperations<String, Link> redisOps, ScrapperClient scrapperClient) {
         this.redisOps = redisOps;
         this.scrapperClient = scrapperClient;
     }
@@ -30,23 +29,16 @@ public class LinkCacheService {
 
     public Mono<List<Link>> getLinks(Long userId) {
         String key = "links:" + userId;
-        return redisOps.opsForList()
-            .range(key, 0, -1)
-            .collectList()
-            .flatMap(list -> {
-                if (!list.isEmpty()) {
-                    return Mono.just(list);
-                }
-                return scrapperClient.getLinksByUserId(userId)
+        return redisOps.opsForList().range(key, 0, -1).collectList().flatMap(list -> {
+            if (!list.isEmpty()) {
+                return Mono.just(list);
+            }
+            return scrapperClient
+                    .getLinksByUserId(userId)
                     .flatMapMany(Flux::fromIterable)
-                    .flatMap(link ->
-                        redisOps.opsForList().rightPush(key, link).thenReturn(link)
-                    )
+                    .flatMap(link -> redisOps.opsForList().rightPush(key, link).thenReturn(link))
                     .collectList()
-                    .flatMap(freshList ->
-                        redisOps.expire(key, TTL)
-                            .thenReturn(freshList)
-                    );
-            });
+                    .flatMap(freshList -> redisOps.expire(key, TTL).thenReturn(freshList));
+        });
     }
 }

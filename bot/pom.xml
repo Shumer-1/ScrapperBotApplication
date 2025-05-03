@@ -118,14 +118,21 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>com.redis</groupId>
+            <artifactId>testcontainers-redis</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.11.0</version> <!-- или последнюю доступную версию -->
+            <version>2.11.0</version>
+            <!-- или последнюю доступную версию -->
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
-            <version>1.21</version> <!-- Или последняя доступная версия -->
+            <version>1.21</version>
+            <!-- Или последняя доступная версия -->
         </dependency>
 
         <!-- Spring Data JPA для работы с Hibernate -->

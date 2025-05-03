@@ -26,31 +26,25 @@ public class KafkaConfig {
 
     @Bean
     public NewTopic inputTopic() {
-        return TopicBuilder.name(inputTopic)
-            .partitions(1)
-            .replicas(1)
-            .build();
+        return TopicBuilder.name(inputTopic).partitions(1).replicas(1).build();
     }
 
     @Bean
     public NewTopic deadLetterTopic() {
-        return TopicBuilder.name(deadLetterTopic)
-            .partitions(1)
-            .replicas(1)
-            .build();
+        return TopicBuilder.name(deadLetterTopic).partitions(1).replicas(1).build();
     }
 
     @Bean
     public DeadLetterPublishingRecoverer recoverer(KafkaTemplate<Object, Object> template) {
-        return new DeadLetterPublishingRecoverer(template,
-            (record, ex) -> new TopicPartition(deadLetterTopic, record.partition()));
+        return new DeadLetterPublishingRecoverer(
+                template, (record, ex) -> new TopicPartition(deadLetterTopic, record.partition()));
     }
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<Object, Object> kafkaListenerContainerFactory(
-        ConsumerFactory<Object, Object> cf,
-        DeadLetterPublishingRecoverer recoverer,
-        @Value("${app.listener.concurrency}") int concurrency) {
+            ConsumerFactory<Object, Object> cf,
+            DeadLetterPublishingRecoverer recoverer,
+            @Value("${app.listener.concurrency}") int concurrency) {
 
         var factory = new ConcurrentKafkaListenerContainerFactory<Object, Object>();
         factory.setConsumerFactory(cf);

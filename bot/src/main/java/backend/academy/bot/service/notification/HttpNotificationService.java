@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-public class HttpNotificationService implements NotificationService{
+public class HttpNotificationService implements NotificationService {
     private final TelegramBot telegramBot;
     private static final Logger log = LoggerFactory.getLogger(HttpNotificationService.class);
 
@@ -20,17 +20,17 @@ public class HttpNotificationService implements NotificationService{
         try {
             telegramBot.execute(sendMessage);
             log.info(
-                "Уведомление успешно отправлено: действие={}, сообщение={}, id пользователя={}",
-                "отправлено",
-                message,
-                userId);
+                    "Уведомление успешно отправлено: действие={}, сообщение={}, id пользователя={}",
+                    "отправлено",
+                    message,
+                    userId);
         } catch (Exception e) {
             log.error(
-                "Ошибка при отправке уведомления: действие={}, сообщение={}, id пользователя={}, ошибка={}",
-                "отправка",
-                message,
-                userId,
-                e.getMessage());
+                    "Ошибка при отправке уведомления: действие={}, сообщение={}, id пользователя={}, ошибка={}",
+                    "отправка",
+                    message,
+                    userId,
+                    e.getMessage());
         }
     }
 }

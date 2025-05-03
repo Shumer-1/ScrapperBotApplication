@@ -1,7 +1,7 @@
 package backend.academy.bot.controller;
 
 import backend.academy.bot.model.dto.NotificationRequest;
-import backend.academy.bot.services.HttpNotificationService;
+import backend.academy.bot.service.notification.HttpNotificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

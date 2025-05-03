@@ -2,6 +2,7 @@ package backend.academy.scrapper.controller;
 
 import backend.academy.scrapper.model.entities.Link;
 import backend.academy.scrapper.service.linkService.LinkService;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -34,6 +35,10 @@ public class ListController {
                 @ApiResponse(responseCode = "400", description = "Неверный формат запроса"),
                 @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
             })
+    @SuppressFBWarnings(
+            value = "ENTITY_LEAK",
+            justification =
+                    "Возвращаем Link напрямую, т.к. в нём нет служебных полей и он эквивалентен публичному DTO.")
     @GetMapping("/links")
     public Flux<Link> getLinks(@RequestParam("userId") long userId) {
         log.info("Получение списка ссылок для пользователя: {}", userId);

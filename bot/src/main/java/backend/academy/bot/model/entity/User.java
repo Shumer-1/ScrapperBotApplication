@@ -1,4 +1,4 @@
-package backend.academy.bot.model.entities;
+package backend.academy.bot.model.entity;
 
 import java.util.List;
 

@@ -3,12 +3,12 @@ package backend.academy.bot.service.notification;
 import backend.academy.bot.model.dto.NotificationRequest;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
-import java.util.List;
 
 @Component
 public class KafkaConsumerNotificationService implements NotificationService {
@@ -20,11 +20,10 @@ public class KafkaConsumerNotificationService implements NotificationService {
     }
 
     @KafkaListener(
-        topics = "${app.topics.input}",
-        groupId = "bot-group",
-        containerFactory = "kafkaListenerContainerFactory")
-    public void listen(List<NotificationRequest> batch,
-                       Acknowledgment ack) {
+            topics = "${app.topics.input}",
+            groupId = "bot-group",
+            containerFactory = "kafkaListenerContainerFactory")
+    public void listen(List<NotificationRequest> batch, Acknowledgment ack) {
         for (var req : batch) {
             process(req);
         }
@@ -44,17 +43,17 @@ public class KafkaConsumerNotificationService implements NotificationService {
         try {
             telegramBot.execute(sendMessage);
             log.info(
-                "Уведомление успешно отправлено: действие={}, сообщение={}, id пользователя={}",
-                "отправлено",
-                message,
-                userId);
+                    "Уведомление успешно отправлено: действие={}, сообщение={}, id пользователя={}",
+                    "отправлено",
+                    message,
+                    userId);
         } catch (Exception e) {
             log.error(
-                "Ошибка при отправке уведомления: действие={}, сообщение={}, id пользователя={}, ошибка={}",
-                "отправка",
-                message,
-                userId,
-                e.getMessage());
+                    "Ошибка при отправке уведомления: действие={}, сообщение={}, id пользователя={}, ошибка={}",
+                    "отправка",
+                    message,
+                    userId,
+                    e.getMessage());
             throw e;
         }
     }

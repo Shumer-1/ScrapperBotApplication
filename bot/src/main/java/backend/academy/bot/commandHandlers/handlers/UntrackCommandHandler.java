@@ -2,7 +2,7 @@ package backend.academy.bot.commandHandlers.handlers;
 
 import backend.academy.bot.client.ScrapperClient;
 import backend.academy.bot.model.dto.UntrackingResponse;
-import backend.academy.bot.services.LinkCacheService;
+import backend.academy.bot.service.LinkCacheService;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
@@ -19,8 +19,8 @@ public class UntrackCommandHandler implements CommandHandler {
     private final ScrapperClient scrapperClient;
     private final LinkCacheService linkCacheService;
 
-
-    public UntrackCommandHandler(TelegramBot telegramBot, ScrapperClient scrapperClient, LinkCacheService linkCacheService) {
+    public UntrackCommandHandler(
+            TelegramBot telegramBot, ScrapperClient scrapperClient, LinkCacheService linkCacheService) {
         this.telegramBot = telegramBot;
         this.scrapperClient = scrapperClient;
         this.linkCacheService = linkCacheService;
@@ -40,8 +40,8 @@ public class UntrackCommandHandler implements CommandHandler {
         Long chatId = update.message().chat().id();
         if (parts.length < 2) {
             sendMessage(
-                chatId,
-                "Пожалуйста, укажите ссылку, которую необходимо удалить. Пример: /untrack https://foo.bar/baz");
+                    chatId,
+                    "Пожалуйста, укажите ссылку, которую необходимо удалить. Пример: /untrack https://foo.bar/baz");
             return;
         }
 
@@ -49,28 +49,26 @@ public class UntrackCommandHandler implements CommandHandler {
         long userId = update.message().from().id();
 
         scrapperClient
-            .removeTracking(link, userId)
-            .flatMap(response -> {
-                if (response.isRemoved()) {
-                    return linkCacheService.invalidateCache(userId)
-                        .thenReturn(response);
-                } else {
-                    return Mono.just(response);
-                }
-            })
-            .subscribe(
-                (UntrackingResponse response) -> {
+                .removeTracking(link, userId)
+                .flatMap(response -> {
                     if (response.isRemoved()) {
-                        sendMessage(chatId, "Ссылка успешно удалена из отслеживаемых.");
+                        return linkCacheService.invalidateCache(userId).thenReturn(response);
                     } else {
-                        sendMessage(chatId, "Ссылка не найдена или не отслеживается.");
+                        return Mono.just(response);
                     }
-                },
-                error -> {
-                    log.error("Ошибка при удалении отслеживания: {}", error.getMessage());
-                    sendMessage(chatId, "Ошибка удаления данных в скраппер: " + error.getMessage());
                 })
-        ;
+                .subscribe(
+                        (UntrackingResponse response) -> {
+                            if (response.isRemoved()) {
+                                sendMessage(chatId, "Ссылка успешно удалена из отслеживаемых.");
+                            } else {
+                                sendMessage(chatId, "Ссылка не найдена или не отслеживается.");
+                            }
+                        },
+                        error -> {
+                            log.error("Ошибка при удалении отслеживания: {}", error.getMessage());
+                            sendMessage(chatId, "Ошибка удаления данных в скраппер: " + error.getMessage());
+                        });
     }
 
     private void sendMessage(Long chatId, String text) {

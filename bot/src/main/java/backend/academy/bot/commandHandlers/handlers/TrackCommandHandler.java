@@ -1,7 +1,7 @@
 package backend.academy.bot.commandHandlers.handlers;
 
 import backend.academy.bot.client.ScrapperClient;
-import backend.academy.bot.services.LinkCacheService;
+import backend.academy.bot.service.LinkCacheService;
 import backend.academy.bot.states.TrackCommandState;
 import backend.academy.bot.states.TrackStateManager;
 import com.pengrad.telegrambot.TelegramBot;
@@ -27,7 +27,11 @@ public class TrackCommandHandler implements CommandHandler {
     private static final Logger log = LoggerFactory.getLogger(TrackCommandHandler.class);
     private final LinkCacheService linkCacheService;
 
-    public TrackCommandHandler(TrackStateManager stateManager, TelegramBot telegramBot, ScrapperClient scrapperClient, LinkCacheService linkCacheService) {
+    public TrackCommandHandler(
+            TrackStateManager stateManager,
+            TelegramBot telegramBot,
+            ScrapperClient scrapperClient,
+            LinkCacheService linkCacheService) {
         this.stateManager = stateManager;
         this.telegramBot = telegramBot;
         this.scrapperClient = scrapperClient;
@@ -72,28 +76,25 @@ public class TrackCommandHandler implements CommandHandler {
                 state.setFilters(newFilters);
                 state.nextStep();
                 log.info(
-                    "Все данные есть, вот они: ссылка {}, id пользователя {}, теги {}, фильтры {}",
-                    state.getLink(),
-                    userId,
-                    state.getTags(),
-                    state.getFilters());
-                sendMessage(
-                    update,
-                    "Ссылка сохранена с тегами: " + state.getTags() + " и фильтрами: " + state.getFilters());
-                scrapperClient
-                    .addTracking(
+                        "Все данные есть, вот они: ссылка {}, id пользователя {}, теги {}, фильтры {}",
                         state.getLink(),
                         userId,
-                        new ArrayList<>(state.getTags()),
-                        new ArrayList<>(state.getFilters()))
-                    .flatMap(unused ->
-                        linkCacheService.invalidateCache(userId)
-                    )
-                    .subscribe(
-                        unused -> {
-                        },
-                        error -> telegramBot.execute(new SendMessage(
-                            update.message().chat().id(), "Ошибка передачи данных в скраппер")));
+                        state.getTags(),
+                        state.getFilters());
+                sendMessage(
+                        update,
+                        "Ссылка сохранена с тегами: " + state.getTags() + " и фильтрами: " + state.getFilters());
+                scrapperClient
+                        .addTracking(
+                                state.getLink(),
+                                userId,
+                                new ArrayList<>(state.getTags()),
+                                new ArrayList<>(state.getFilters()))
+                        .flatMap(unused -> linkCacheService.invalidateCache(userId))
+                        .subscribe(
+                                unused -> {},
+                                error -> telegramBot.execute(new SendMessage(
+                                        update.message().chat().id(), "Ошибка передачи данных в скраппер")));
                 stateManager.clearState(userId);
             }
         }

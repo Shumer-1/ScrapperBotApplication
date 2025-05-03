@@ -10,8 +10,9 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties(prefix = "app", ignoreUnknownFields = true)
 public record ScrapperConfig(@NotEmpty String githubToken, StackOverflowCredentials stackOverflow) {
     public record StackOverflowCredentials(@NotEmpty String key, @NotEmpty String accessToken) {}
+
     @Bean
-    public ObjectMapper objectMapper(){
+    public ObjectMapper objectMapper() {
         return new ObjectMapper();
     }
 }
