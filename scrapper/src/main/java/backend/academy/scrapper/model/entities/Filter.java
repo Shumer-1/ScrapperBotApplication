@@ -27,9 +27,9 @@ public class Filter {
     @NotNull
     private Set<Link> trackingLinks = new HashSet<>();
 
-    ;
 
-    public Filter() {}
+    public Filter() {
+    }
 
     public Set<Link> getTrackingLinks() {
         return trackingLinks;

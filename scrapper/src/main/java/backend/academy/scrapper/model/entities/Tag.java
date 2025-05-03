@@ -27,9 +27,8 @@ public class Tag {
     @NotNull
     private Set<Link> trackingLinks = new HashSet<>();
 
-    ;
-
-    public Tag() {}
+    public Tag() {
+    }
 
     public Tag(String tag) {
         this.tag = tag;

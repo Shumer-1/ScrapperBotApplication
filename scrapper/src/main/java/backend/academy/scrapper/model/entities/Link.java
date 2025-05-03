@@ -36,28 +36,25 @@ public class Link {
     @ManyToMany
     @NotNull
     @JoinTable(
-            name = "link_and_tags",
-            joinColumns = @JoinColumn(name = "link_id"),
-            inverseJoinColumns = @JoinColumn(name = "tag_id"))
+        name = "link_and_tags",
+        joinColumns = @JoinColumn(name = "link_id"),
+        inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tags = new HashSet<>();
-
-    ;
 
     @ManyToMany
     @NotNull
     @JoinTable(
-            name = "link_and_filters",
-            joinColumns = @JoinColumn(name = "link_id"),
-            inverseJoinColumns = @JoinColumn(name = "filter_id"))
+        name = "link_and_filters",
+        joinColumns = @JoinColumn(name = "link_id"),
+        inverseJoinColumns = @JoinColumn(name = "filter_id"))
     private Set<Filter> filters = new HashSet<>();
-
-    ;
 
     @Column(name = "last_updated")
     @Nullable
     private Instant lastUpdated;
 
-    public Link() {}
+    public Link() {
+    }
 
     public Link(String link, User user, Set<Tag> tags, Set<Filter> filters, Instant lastUpdated) {
         this.link = link;
