@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import backend.academy.scrapper.data.ormRepositories.OrmUserRepository;
-import backend.academy.scrapper.exceptions.UserAlreadyExistsException;
+import backend.academy.scrapper.exception.UserAlreadyExistsException;
 import backend.academy.scrapper.model.entities.User;
 import backend.academy.scrapper.service.userService.UserService;
 import org.junit.jupiter.api.AfterEach;

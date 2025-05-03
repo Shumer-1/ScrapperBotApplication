@@ -8,7 +8,7 @@ import backend.academy.scrapper.data.ormRepositories.OrmFilterRepository;
 import backend.academy.scrapper.data.ormRepositories.OrmLinkRepository;
 import backend.academy.scrapper.data.ormRepositories.OrmTagRepository;
 import backend.academy.scrapper.data.ormRepositories.OrmUserRepository;
-import backend.academy.scrapper.exceptions.ResourceNotFoundException;
+import backend.academy.scrapper.exception.ResourceNotFoundException;
 import backend.academy.scrapper.model.entities.Filter;
 import backend.academy.scrapper.model.entities.Link;
 import backend.academy.scrapper.model.entities.Tag;
