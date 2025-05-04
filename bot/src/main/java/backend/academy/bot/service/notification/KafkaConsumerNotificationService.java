@@ -1,6 +1,6 @@
 package backend.academy.bot.service.notification;
 
-import backend.academy.bot.model.dto.NotificationRequest;
+import backend.academy.avro.NotificationRequest;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 import java.util.List;
@@ -34,6 +34,7 @@ public class KafkaConsumerNotificationService implements NotificationService {
         if (req.getMessage() == null) {
             throw new IllegalArgumentException("Message must not be null");
         }
+
         notify(req.getMessage(), req.getUserId());
     }
 

@@ -32,7 +32,8 @@ services:
              liquibase --url=jdbc:postgresql://postgres:5432/${POSTGRES_DB} --username=${LIQUIBASE_USERNAME} --password=${LIQUIBASE_PASSWORD} --changeLogFile=changelog/changelog.sql update"
 
   zookeeper:
-    image: confluentinc/cp-zookeeper:latest
+    image: confluentinc/cp-zookeeper:7.6.0
+    restart: always
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -40,19 +41,31 @@ services:
       - "2181:2181"
 
   kafka:
-    image: confluentinc/cp-kafka:latest
+    image: confluentinc/cp-kafka:7.6.0
+    restart: always
     depends_on:
       - zookeeper
     ports:
       - "9092:9092"
     environment:
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092 # на каких портах прослушиваем входящие подключения
-      # [протокол]://[адрес]:[порт]
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092 # какие адреса, порты будут возвращены клиенту
-      # при установке соединения
-      KAFKA_BROKER_ID: 1 # идентификатор для брокера в кластере
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181 # адрес и порт zookeeper
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry:7.6.0
+    restart: always
+    depends_on:
+      - kafka
+      - zookeeper
+    ports:
+      - "8082:8082"
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka:9092
 
 volumes:
   redisdata:
