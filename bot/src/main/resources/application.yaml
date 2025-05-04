@@ -1,10 +1,39 @@
 app:
   telegram-token: "123456:ABCDEF"
+  rate-limit:
+    capacity: 50
+    refill-tokens: 50
+    period: 1m
+    error-code: 429
+    error-message: "Too Many Requests"
+
+
   topics:
     input: scrapperTopic
     dead-letter: deadLetterTopic
   listener:
     concurrency: 1
+  http:
+    connect-timeout: 5s
+    read-timeout: 10s
+    write-timeout: 10s
+    response-timeout: 12s
+
+    retry:
+      attempts: 3
+      backoff: 2s
+      status-codes:
+        - 502
+        - 503
+        - 504
+
+    circuit-breaker:
+      sliding-window-size: 1
+      minimum-required-calls: 1
+      failure-rate-threshold: 100
+      permitted-calls-in-half-open-state: 1
+      wait-duration-in-open-state: 1s
+
 
 spring:
   redis:
