@@ -25,17 +25,16 @@ public class KafkaProducerNotificationService implements NotificationService {
     @Override
     public void sendNotification(String message, long userId) {
         NotificationRequest record = NotificationRequest.newBuilder()
-            .setMessage(message)
-            .setUserId(userId)
-            .build();
+                .setMessage(message)
+                .setUserId(userId)
+                .build();
 
-        kafkaTemplate.send(topic, record)
-            .whenComplete((result, ex) -> {
-                if (ex != null) {
-                    log.error("Ошибка при отправке Avro-сообщения", ex);
-                } else {
-                    log.info("Avro-сообщение отправлено: {}", record);
-                }
-            });
+        kafkaTemplate.send(topic, record).whenComplete((result, ex) -> {
+            if (ex != null) {
+                log.error("Ошибка при отправке Avro-сообщения", ex);
+            } else {
+                log.info("Avro-сообщение отправлено: {}", record);
+            }
+        });
     }
 }

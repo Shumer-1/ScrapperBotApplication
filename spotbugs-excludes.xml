@@ -8,6 +8,12 @@
         see: https://find-sec-bugs.github.io/bugs.htm
      -->
     <Match>
+        <Class name="~backend\.academy\.avro\.NotificationRequest"/>
+        <Method name="getDecoder"/>
+        <Bug pattern="MS_EXPOSE_REP"/>
+    </Match>
+
+    <Match>
         <Or>
             <Bug pattern="INFORMATION_EXPOSURE_THROUGH_AN_ERROR_MESSAGE"/>
             <Bug pattern="URLCONNECTION_SSRF_FD"/>
