@@ -3,7 +3,7 @@ package backend.academy.bot;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import backend.academy.bot.model.dto.NotificationRequest;
+import backend.academy.avro.NotificationRequest;
 import backend.academy.bot.service.notification.KafkaConsumerNotificationService;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
@@ -15,7 +15,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.kafka.support.Acknowledgment;
 
-public class KafkaConsumerNotificationServiceTest {
+class KafkaConsumerNotificationServiceTest {
 
     @Mock
     private TelegramBot telegramBot;
@@ -37,12 +37,12 @@ public class KafkaConsumerNotificationServiceTest {
         request.setMessage("Test message");
         request.setUserId(123456789L);
 
-        when(telegramBot.execute(any(SendMessage.class))).thenThrow(new RuntimeException("Telegram API error"));
+        when(telegramBot.execute(any(SendMessage.class)))
+            .thenThrow(new RuntimeException("Telegram API error"));
 
         try {
             kafkaConsumerNotificationService.listen(List.of(request), acknowledgment);
-        } catch (Exception e) {
-
+        } catch (Exception ignored) {
         }
 
         verify(telegramBot).execute(any(SendMessage.class));
