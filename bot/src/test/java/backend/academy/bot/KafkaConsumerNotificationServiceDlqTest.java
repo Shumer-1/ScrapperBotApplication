@@ -1,38 +1,38 @@
-//package backend.academy.bot;
+// package backend.academy.bot;
 //
-//import static org.junit.jupiter.api.Assertions.*;
+// import static org.junit.jupiter.api.Assertions.*;
 //
-//import backend.academy.avro.NotificationRequest;
-//import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
-//import io.confluent.kafka.serializers.KafkaAvroDeserializer;
-//import io.confluent.kafka.serializers.KafkaAvroSerializer;
-//import java.time.Duration;
-//import java.util.HashMap;
-//import java.util.List;
-//import java.util.Map;
-//import org.apache.kafka.clients.consumer.Consumer;
-//import org.apache.kafka.clients.consumer.ConsumerConfig;
-//import org.apache.kafka.clients.consumer.ConsumerRecord;
-//import org.apache.kafka.clients.producer.KafkaProducer;
-//import org.apache.kafka.clients.producer.ProducerConfig;
-//import org.apache.kafka.common.serialization.StringDeserializer;
-//import org.apache.kafka.common.serialization.StringSerializer;
-//import org.junit.jupiter.api.AfterEach;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-//import org.springframework.kafka.test.utils.KafkaTestUtils;
-//import org.springframework.test.context.DynamicPropertyRegistry;
-//import org.springframework.test.context.DynamicPropertySource;
-//import org.testcontainers.containers.KafkaContainer;
-//import org.testcontainers.junit.jupiter.Container;
-//import org.testcontainers.junit.jupiter.Testcontainers;
-//import org.testcontainers.utility.DockerImageName;
+// import backend.academy.avro.NotificationRequest;
+// import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
+// import io.confluent.kafka.serializers.KafkaAvroDeserializer;
+// import io.confluent.kafka.serializers.KafkaAvroSerializer;
+// import java.time.Duration;
+// import java.util.HashMap;
+// import java.util.List;
+// import java.util.Map;
+// import org.apache.kafka.clients.consumer.Consumer;
+// import org.apache.kafka.clients.consumer.ConsumerConfig;
+// import org.apache.kafka.clients.consumer.ConsumerRecord;
+// import org.apache.kafka.clients.producer.KafkaProducer;
+// import org.apache.kafka.clients.producer.ProducerConfig;
+// import org.apache.kafka.common.serialization.StringDeserializer;
+// import org.apache.kafka.common.serialization.StringSerializer;
+// import org.junit.jupiter.api.AfterEach;
+// import org.junit.jupiter.api.BeforeEach;
+// import org.junit.jupiter.api.Test;
+// import org.springframework.boot.test.context.SpringBootTest;
+// import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+// import org.springframework.kafka.test.utils.KafkaTestUtils;
+// import org.springframework.test.context.DynamicPropertyRegistry;
+// import org.springframework.test.context.DynamicPropertySource;
+// import org.testcontainers.containers.KafkaContainer;
+// import org.testcontainers.junit.jupiter.Container;
+// import org.testcontainers.junit.jupiter.Testcontainers;
+// import org.testcontainers.utility.DockerImageName;
 //
-//@SpringBootTest
-//@Testcontainers
-//class KafkaConsumerNotificationServiceDlqTest {
+// @SpringBootTest
+// @Testcontainers
+// class KafkaConsumerNotificationServiceDlqTest {
 //
 //    private static final String TOPIC = "scrapperTopic";
 //    private static final String DLQ_TOPIC = "deadLetterTopic";
@@ -119,4 +119,4 @@
 //            () -> assertNull(actual.getMessage(), "Поле message должно быть null")
 //        );
 //    }
-//}
+// }

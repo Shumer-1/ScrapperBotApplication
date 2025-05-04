@@ -37,8 +37,7 @@ class KafkaConsumerNotificationServiceTest {
         request.setMessage("Test message");
         request.setUserId(123456789L);
 
-        when(telegramBot.execute(any(SendMessage.class)))
-            .thenThrow(new RuntimeException("Telegram API error"));
+        when(telegramBot.execute(any(SendMessage.class))).thenThrow(new RuntimeException("Telegram API error"));
 
         try {
             kafkaConsumerNotificationService.listen(List.of(request), acknowledgment);
