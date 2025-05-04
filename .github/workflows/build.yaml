@@ -6,12 +6,8 @@ on:
 
 jobs:
   build:
-    name: Build & Test
+    name: Build
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-      pull-requests: write
 
     steps:
       - uses: actions/checkout@v4
@@ -19,10 +15,10 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           java-version: '23'
-          distribution: 'temurin'
+          distribution: temurin
           cache: maven
-
-      - name: Maven build
+          
+      - name: Maven verify
         run: mvn verify --batch-mode
 
       - id: jacoco
@@ -37,12 +33,8 @@ jobs:
           update-comment: true
 
   linter:
-    name: Static analysis
+    name: Статический анализ
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-      pull-requests: write
 
     steps:
       - uses: actions/checkout@v4
@@ -50,8 +42,14 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           java-version: '23'
-          distribution: 'temurin'
+          distribution: temurin
           cache: maven
 
-      - name: Run linters
-        run: mvn compile -am spotless:check modernizer:modernizer spotbugs:check pmd:check pmd:cpd-check
+      - name: Maven lint
+        run: mvn compile \
+                 -am \
+                 spotless:check \
+                 modernizer:modernizer \
+                 spotbugs:check \
+                 pmd:check \
+                 pmd:cpd-check
