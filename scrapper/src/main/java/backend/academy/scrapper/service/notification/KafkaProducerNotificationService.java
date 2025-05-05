@@ -24,6 +24,7 @@ public class KafkaProducerNotificationService implements NotificationService {
 
     @Override
     public void sendNotification(String message, long userId) {
+        log.info("Отправляем уведомление в Kafka от {}", userId);
         NotificationRequest record = NotificationRequest.newBuilder()
                 .setMessage(message)
                 .setUserId(userId)

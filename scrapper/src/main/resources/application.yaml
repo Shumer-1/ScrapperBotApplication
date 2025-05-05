@@ -35,6 +35,9 @@ app:
       wait-duration-in-open-state: 1s
 
 spring:
+  devtools:
+    restart:
+      enabled: false
   kafka:
     bootstrap-servers: localhost:9092
     properties:

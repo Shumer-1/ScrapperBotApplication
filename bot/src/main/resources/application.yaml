@@ -1,5 +1,5 @@
 app:
-  telegram-token: "123456:ABCDEF"
+  telegram-token: ${TELEGRAM_TOKEN}
   rate-limit:
     capacity: 50
     refill-tokens: 50
@@ -36,6 +36,9 @@ app:
 
 
 spring:
+  devtools:
+    restart:
+      enabled: false
   redis:
     host: ${REDIS_HOST:localhost}
     port: ${REDIS_PORT:6379}
@@ -54,10 +57,14 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
       properties:
+        specific.avro.reader: true
         schema.registry.url: http://localhost:8082
     producer:
+      properties:
+        specific.avro.reader: true
+        schema.registry.url: http://localhost:8082
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
   application:
     name: Bot
   liquibase:
