@@ -21,15 +21,12 @@ public class ScrapperClient {
     private static final Logger log = LoggerFactory.getLogger(ScrapperClient.class);
 
     private final WebClient webClient;
-    private final HttpNotificationService notificationService;
     private final String scrapperBaseUrl;
 
     public ScrapperClient(
             WebClient webClient,
-            HttpNotificationService notificationService,
             @Value("${scrapper.base-url}") String scrapperBaseUrl) {
         this.webClient = webClient;
-        this.notificationService = notificationService;
         this.scrapperBaseUrl = scrapperBaseUrl;
     }
 

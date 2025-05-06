@@ -5,8 +5,10 @@ import com.pengrad.telegrambot.request.SendMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
-@Service
+@Service("httpNotificationService")
 public class HttpNotificationService implements NotificationService {
     private final TelegramBot telegramBot;
     private static final Logger log = LoggerFactory.getLogger(HttpNotificationService.class);
@@ -15,22 +17,14 @@ public class HttpNotificationService implements NotificationService {
         this.telegramBot = telegramBot;
     }
 
-    public void notify(String message, long userId) {
-        SendMessage sendMessage = new SendMessage(userId, message);
-        try {
-            telegramBot.execute(sendMessage);
-            log.info(
-                    "Уведомление успешно отправлено: действие={}, сообщение={}, id пользователя={}",
-                    "отправлено",
-                    message,
-                    userId);
-        } catch (Exception e) {
-            log.error(
-                    "Ошибка при отправке уведомления: действие={}, сообщение={}, id пользователя={}, ошибка={}",
-                    "отправка",
-                    message,
-                    userId,
-                    e.getMessage());
-        }
+    @Override
+    public Mono<Void> notify(String message, long userId) {
+        return Mono.fromCallable(() -> {
+                telegramBot.execute(new SendMessage(userId, message));
+                return (Void) null;
+            })
+            .doOnSuccess(v -> log.info("HTTP-уведомление доставлено: {}", message))
+            .doOnError(e -> log.error("Ошибка HTTP-уведомления", e))
+            .subscribeOn(Schedulers.boundedElastic());
     }
 }

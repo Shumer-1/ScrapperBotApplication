@@ -1,5 +1,8 @@
 package backend.academy.bot.service.notification;
 
+import reactor.core.publisher.Mono;
+
 public interface NotificationService {
-    void notify(String message, long userId);
+    Mono<Void> notify(String message, long userId);
 }
+

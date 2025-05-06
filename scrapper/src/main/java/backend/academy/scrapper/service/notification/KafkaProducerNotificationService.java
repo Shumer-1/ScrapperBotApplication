@@ -4,12 +4,11 @@ import backend.academy.avro.NotificationRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
-@Service
-@ConditionalOnProperty(name = "app.message-transport", havingValue = "kafka", matchIfMissing = true)
+@Service("kafkaNotificationService")
 public class KafkaProducerNotificationService implements NotificationService {
 
     private static final Logger log = LoggerFactory.getLogger(KafkaProducerNotificationService.class);
@@ -23,19 +22,17 @@ public class KafkaProducerNotificationService implements NotificationService {
     }
 
     @Override
-    public void sendNotification(String message, long userId) {
-        log.info("Отправляем уведомление в Kafka от {}", userId);
+    public Mono<Void> sendNotification(String message, long userId) {
         NotificationRequest record = NotificationRequest.newBuilder()
-                .setMessage(message)
-                .setUserId(userId)
-                .build();
+            .setMessage(message)
+            .setUserId(userId)
+            .build();
 
-        kafkaTemplate.send(topic, record).whenComplete((result, ex) -> {
-            if (ex != null) {
-                log.error("Ошибка при отправке Avro-сообщения", ex);
-            } else {
-                log.info("Avro-сообщение отправлено: {}", record);
-            }
-        });
+        return Mono.fromFuture(kafkaTemplate.send(topic, record))
+            .doOnSuccess(result -> log.info("Kafka-сообщение отправлено offset={}",
+                result.getRecordMetadata().offset()))
+            .doOnError(error -> log.error("Ошибка при отправке Avro-сообщения", error))
+            .then();
     }
+
 }

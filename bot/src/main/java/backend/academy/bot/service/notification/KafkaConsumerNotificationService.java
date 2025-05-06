@@ -6,11 +6,15 @@ import com.pengrad.telegrambot.request.SendMessage;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @Component
+@ConditionalOnProperty(name = "app.message-transport", havingValue = "Kafka")
 public class KafkaConsumerNotificationService implements NotificationService {
     private static final Logger log = LoggerFactory.getLogger(KafkaConsumerNotificationService.class);
     private final TelegramBot telegramBot;
@@ -39,23 +43,13 @@ public class KafkaConsumerNotificationService implements NotificationService {
     }
 
     @Override
-    public void notify(String message, long userId) {
-        SendMessage sendMessage = new SendMessage(userId, message);
-        try {
-            telegramBot.execute(sendMessage);
-            log.info(
-                    "Уведомление успешно отправлено: действие={}, сообщение={}, id пользователя={}",
-                    "отправлено",
-                    message,
-                    userId);
-        } catch (Exception e) {
-            log.error(
-                    "Ошибка при отправке уведомления: действие={}, сообщение={}, id пользователя={}, ошибка={}",
-                    "отправка",
-                    message,
-                    userId,
-                    e.getMessage());
-            throw e;
-        }
+    public Mono<Void> notify(String message, long userId) {
+        return Mono.fromCallable(() -> {
+                telegramBot.execute(new SendMessage(userId, message));
+                return (Void) null;
+            })
+            .doOnSuccess(v -> log.info("Kafka-уведомление доставлено: {}", message))
+            .doOnError(error -> log.error("Ошибка Kafka-уведомления", error))
+            .subscribeOn(Schedulers.boundedElastic());
     }
 }
