@@ -8,9 +8,10 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-@Service("kafkaNotificationService")
-public class KafkaProducerNotificationService implements NotificationService {
+@Service(KafkaProducerNotificationService.BEAN_NAME)
 
+public class KafkaProducerNotificationService implements NotificationService {
+    public static final String BEAN_NAME = "kafkaNotificationService";
     private static final Logger log = LoggerFactory.getLogger(KafkaProducerNotificationService.class);
     private final KafkaTemplate<String, NotificationRequest> kafkaTemplate;
 

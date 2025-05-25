@@ -9,13 +9,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-@Component
+@Service(KafkaConsumerNotificationService.BEAN_NAME)
 @ConditionalOnProperty(name = "app.message-transport", havingValue = "Kafka")
 public class KafkaConsumerNotificationService implements NotificationService {
+    public static final String BEAN_NAME = "kafkaNotificationService";
+
     private static final Logger log = LoggerFactory.getLogger(KafkaConsumerNotificationService.class);
     private final TelegramBot telegramBot;
 

@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-@Service("httpNotificationService")
+@Service(HttpNotificationService.BEAN_NAME)
 public class HttpNotificationService implements NotificationService {
+    public static final String BEAN_NAME = "httpNotificationService";
+
     private static final Logger log = LoggerFactory.getLogger(HttpNotificationService.class);
     private final WebClient webClient;
 

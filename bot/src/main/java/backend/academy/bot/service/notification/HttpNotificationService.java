@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-@Service("httpNotificationService")
+@Service(HttpNotificationService.BEAN_NAME)
 public class HttpNotificationService implements NotificationService {
+    public static final String BEAN_NAME = "httpNotificationService";
+
     private final TelegramBot telegramBot;
     private static final Logger log = LoggerFactory.getLogger(HttpNotificationService.class);
 
