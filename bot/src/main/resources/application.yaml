@@ -1,11 +1,20 @@
 app:
   telegram-token: ${TELEGRAM_TOKEN}
   rate-limit:
-    capacity: 50
-    refill-tokens: 50
-    period: 1m
-    error-code: 429
-    error-message: "Too Many Requests"
+    defaults:
+      capacity: 50
+      refill-tokens: 50
+      period: 1m
+      error-code: 429
+      error-message: "Too Many Requests"
+    per-endpoint:
+      "/api/bot/notify":
+        capacity: 100
+        refill-tokens: 100
+        period: 1m
+        error-code: 429
+        error-message: "Too Many Requests on api/bot/notify"
+
 
 
   topics:

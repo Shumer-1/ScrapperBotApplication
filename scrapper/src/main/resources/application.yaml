@@ -7,11 +7,37 @@ app:
     access-token: ${SO_ACCESS_TOKEN}
 
   rate-limit:
-    capacity: 50
-    refill-tokens: 50
-    period: 1m
-    error-code: 429
-    error-message: "Too Many Requests"
+    defaults:
+      capacity: 50
+      refill-tokens: 50
+      period: 1m
+      error-code: 429
+      error-message: "Too Many Requests"
+    per-endpoint:
+      "api/scrapper/links":
+        capacity: 20
+        refill-tokens: 20
+        period: 1m
+        error-code: 429
+        error-message: "Too Many Requests on api/scrapper/links"
+      "api/scrapper/user":
+        capacity: 20
+        refill-tokens: 20
+        period: 1m
+        error-code: 429
+        error-message: "Too Many Requests on api/scrapper/user"
+      "api/scrapper/track":
+        capacity: 100
+        refill-tokens: 100
+        period: 1m
+        error-code: 429
+        error-message: "Too Many Requests on api/scrapper/track"
+      "api/scrapper/untrack":
+        capacity: 100
+        refill-tokens: 100
+        period: 1m
+        error-code: 429
+        error-message: "Too Many Requests on api/scrapper/untrack"
 
   http:
     connect-timeout: 5s

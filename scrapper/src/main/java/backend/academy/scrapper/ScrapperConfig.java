@@ -6,6 +6,7 @@ import backend.academy.scrapper.config.RetryProps;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.github.resilience4j.reactor.circuitbreaker.operator.CircuitBreakerOperator;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
@@ -55,6 +56,10 @@ public record ScrapperConfig(@NotEmpty String githubToken, StackOverflowCredenti
         return CircuitBreaker.of("backendServiceCb", cfg);
     }
 
+    @Bean(name = "notificationCb")
+    public CircuitBreaker notificationCircuitBreaker(CircuitBreakerRegistry registry) {
+        return registry.circuitBreaker("notificationCb");
+    }
 
     @Bean
     public WebClient webClient(HttpTimeoutProps t, RetryProps retryProps, CircuitBreakerProps circuitBreakerProps) {
