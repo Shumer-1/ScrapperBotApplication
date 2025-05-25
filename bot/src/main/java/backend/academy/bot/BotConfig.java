@@ -42,6 +42,7 @@ public record BotConfig(@NotEmpty String telegramToken) implements AsyncConfigur
     public TelegramBot telegramBot(BotConfig botConfig) {
         return new TelegramBot(botConfig.telegramToken());
     }
+
     @Bean
     public CircuitBreaker circuitBreaker(CircuitBreakerProps props) {
         CircuitBreakerConfig cfg = CircuitBreakerConfig.custom()
@@ -57,6 +58,11 @@ public record BotConfig(@NotEmpty String telegramToken) implements AsyncConfigur
         return CircuitBreaker.of("backendServiceCb", cfg);
     }
 
+    @Bean(name = "notificationCb")
+    public CircuitBreaker notificationCircuitBreaker(CircuitBreakerRegistry registry) {
+        return registry.circuitBreaker("notificationCb");
+    }
+
 
     @Bean
     public WebClient webClient(HttpTimeoutProps t, RetryProps retryProps, CircuitBreakerProps circuitBreakerProps) {
@@ -66,7 +72,7 @@ public record BotConfig(@NotEmpty String telegramToken) implements AsyncConfigur
             .responseTimeout(t.responseTimeout())
             .doOnConnected(conn -> conn
                 .addHandlerLast(new ReadTimeoutHandler(
-                    t.readTimeout().toMillis(),  TimeUnit.MILLISECONDS))
+                    t.readTimeout().toMillis(), TimeUnit.MILLISECONDS))
                 .addHandlerLast(new WriteTimeoutHandler(
                     t.writeTimeout().toMillis(), TimeUnit.MILLISECONDS)));
 
@@ -92,9 +98,10 @@ public record BotConfig(@NotEmpty String telegramToken) implements AsyncConfigur
             .filter(retryFilter)
             .build();
     }
+
     private boolean shouldRetry(ClientRequest req, ClientResponse resp, RetryProps rp) {
         boolean codeMatch = rp.statusCodes().contains(resp.statusCode().value());
-        boolean methodOk  = req.method() != null &&
+        boolean methodOk = req.method() != null &&
             List.of(HttpMethod.GET, HttpMethod.HEAD, HttpMethod.PUT,
                     HttpMethod.DELETE, HttpMethod.OPTIONS)
                 .contains(req.method());
