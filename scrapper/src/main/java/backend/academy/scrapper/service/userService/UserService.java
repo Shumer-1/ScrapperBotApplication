@@ -1,6 +1,6 @@
 package backend.academy.scrapper.service.userService;
 
-import backend.academy.scrapper.exceptions.UserAlreadyExistsException;
+import backend.academy.scrapper.exception.UserAlreadyExistsException;
 import backend.academy.scrapper.model.entities.User;
 import org.springframework.stereotype.Service;
 

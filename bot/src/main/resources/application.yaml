@@ -1,7 +1,79 @@
 app:
-  telegram-token: ${TELEGRAM_TOKEN} # env variable
+  telegram-token: ${TELEGRAM_TOKEN}
+  rate-limit:
+    defaults:
+      capacity: 50
+      refill-tokens: 50
+      period: 1m
+      error-code: 429
+      error-message: "Too Many Requests"
+    per-endpoint:
+      "/api/bot/notify":
+        capacity: 100
+        refill-tokens: 100
+        period: 1m
+        error-code: 429
+        error-message: "Too Many Requests on api/bot/notify"
+
+
+
+  topics:
+    input: scrapperTopic
+    dead-letter: deadLetterTopic
+  listener:
+    concurrency: 1
+  http:
+    connect-timeout: 5s
+    read-timeout: 10s
+    write-timeout: 10s
+    response-timeout: 12s
+
+    retry:
+      attempts: 3
+      backoff: 2s
+      status-codes:
+        - 502
+        - 503
+        - 504
+
+    circuit-breaker:
+      sliding-window-size: 1
+      minimum-required-calls: 1
+      failure-rate-threshold: 100
+      permitted-calls-in-half-open-state: 1
+      wait-duration-in-open-state: 1s
+
 
 spring:
+  devtools:
+    restart:
+      enabled: false
+  redis:
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    listener:
+      ack-mode: manual
+      poll-timeout: 1s
+      concurrency: 1
+    consumer:
+      enable-auto-commit: false
+      max-poll-records: 500
+      isolation-level: read_committed
+      group-id: bot-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+      properties:
+        specific.avro.reader: true
+        schema.registry.url: http://localhost:8082
+    producer:
+      properties:
+        specific.avro.reader: true
+        schema.registry.url: http://localhost:8082
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
   application:
     name: Bot
   liquibase:

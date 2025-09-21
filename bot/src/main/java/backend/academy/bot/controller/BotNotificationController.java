@@ -1,7 +1,7 @@
 package backend.academy.bot.controller;
 
 import backend.academy.bot.model.dto.NotificationRequest;
-import backend.academy.bot.services.NotificationService;
+import backend.academy.bot.service.notification.HttpNotificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -21,9 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 public class BotNotificationController {
     private static final Logger log = LoggerFactory.getLogger(BotNotificationController.class);
-    private final NotificationService notificationService;
+    private final HttpNotificationService notificationService;
 
-    public BotNotificationController(NotificationService notificationService) {
+    public BotNotificationController(HttpNotificationService notificationService) {
         this.notificationService = notificationService;
     }
 

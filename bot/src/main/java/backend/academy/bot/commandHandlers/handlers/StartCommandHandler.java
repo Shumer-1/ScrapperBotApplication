@@ -30,14 +30,14 @@ public class StartCommandHandler implements CommandHandler {
                     .registerUser(telegramId, username)
                     .subscribe(
                             response -> {
-                                if (response.isExists()) {
-                                    sendMessage(update, "Пользователь уже зарегистрирован");
-                                } else {
-                                    sendMessage(update, "Пользователь зарегистрирован");
-                                }
+                                sendMessage(update, "Пользователь зарегистрирован");
                             },
                             error -> {
-                                sendMessage(update, "Ошибка при регистрации: " + error.getMessage());
+                                if (error.getMessage().contains("уже существует")) {
+                                    sendMessage(update, "Пользователь уже зарегистрирован");
+                                } else {
+                                    sendMessage(update, "Ошибка при регистрации: " + error.getMessage());
+                                }
                             });
         }
     }

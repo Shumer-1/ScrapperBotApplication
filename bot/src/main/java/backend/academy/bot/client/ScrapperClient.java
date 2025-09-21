@@ -5,8 +5,8 @@ import backend.academy.bot.model.dto.UntrackingRequest;
 import backend.academy.bot.model.dto.UntrackingResponse;
 import backend.academy.bot.model.dto.UserRegistrationRequest;
 import backend.academy.bot.model.dto.UserRegistrationResponse;
-import backend.academy.bot.model.entities.Link;
-import backend.academy.bot.services.NotificationService;
+import backend.academy.bot.model.entity.Link;
+import backend.academy.bot.service.notification.HttpNotificationService;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,15 +21,12 @@ public class ScrapperClient {
     private static final Logger log = LoggerFactory.getLogger(ScrapperClient.class);
 
     private final WebClient webClient;
-    private final NotificationService notificationService;
     private final String scrapperBaseUrl;
 
     public ScrapperClient(
             WebClient webClient,
-            NotificationService notificationService,
             @Value("${scrapper.base-url}") String scrapperBaseUrl) {
         this.webClient = webClient;
-        this.notificationService = notificationService;
         this.scrapperBaseUrl = scrapperBaseUrl;
     }
 

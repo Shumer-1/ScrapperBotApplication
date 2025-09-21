@@ -41,8 +41,6 @@ public class Link {
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tags = new HashSet<>();
 
-    ;
-
     @ManyToMany
     @NotNull
     @JoinTable(
@@ -50,8 +48,6 @@ public class Link {
             joinColumns = @JoinColumn(name = "link_id"),
             inverseJoinColumns = @JoinColumn(name = "filter_id"))
     private Set<Filter> filters = new HashSet<>();
-
-    ;
 
     @Column(name = "last_updated")
     @Nullable

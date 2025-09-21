@@ -1,4 +1,4 @@
-package backend.academy.scrapper.exceptions;
+package backend.academy.scrapper.exception;
 
 public class DataAccessException extends RuntimeException {
 

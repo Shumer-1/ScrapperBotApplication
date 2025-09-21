@@ -2,7 +2,7 @@ package backend.academy.bot.model.dto;
 
 public class NotificationRequest {
     private String message;
-    private long userId;
+    private Long userId;
 
     public NotificationRequest() {}
 

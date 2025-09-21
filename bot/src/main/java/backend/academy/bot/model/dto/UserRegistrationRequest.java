@@ -1,6 +1,6 @@
 package backend.academy.bot.model.dto;
 
-import backend.academy.bot.model.entities.User;
+import backend.academy.bot.model.entity.User;
 
 public class UserRegistrationRequest {
     private long userId;

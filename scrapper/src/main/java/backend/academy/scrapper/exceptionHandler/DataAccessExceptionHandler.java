@@ -1,6 +1,6 @@
 package backend.academy.scrapper.exceptionHandler;
 
-import backend.academy.scrapper.exceptions.ResourceNotFoundException;
+import backend.academy.scrapper.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

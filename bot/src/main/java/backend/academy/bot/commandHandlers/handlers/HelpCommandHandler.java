@@ -1,6 +1,5 @@
 package backend.academy.bot.commandHandlers.handlers;
 
-import backend.academy.bot.commandHandlers.CommandDispatcher;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
@@ -21,10 +20,6 @@ public class HelpCommandHandler implements CommandHandler {
 
     @Override
     public void handle(Update update) {
-        if (!CommandDispatcher.isIsStarted()) {
-            telegramBot.execute(new SendMessage(update.message().chat().id(), "Сначала нужно зарегистрироваться."));
-            return;
-        }
         String responseText =
                 """
                 /start - регистрация пользователя.\n

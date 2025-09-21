@@ -1,0 +1,15 @@
+{
+  "namespace": "backend.academy.avro",
+  "type": "record",
+  "name": "NotificationRequest",
+  "fields": [
+    {
+      "name": "message",
+      "type": "string"
+    },
+    {
+      "name": "userId",
+      "type": "long"
+    }
+  ]
+}
